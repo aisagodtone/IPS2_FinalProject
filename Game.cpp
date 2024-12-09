@@ -20,8 +20,6 @@ constexpr char game_icon_img_path[] = "./assets/image/game_icon.png";
 constexpr char game_start_sound_path[] = "./assets/sound/growl.wav";
 constexpr char background_img_path[] = "./assets/image/StartBackground.jpg";
 constexpr char background_sound_path[] = "./assets/sound/BackgroundMusic.ogg";
-constexpr char manu_background_img_path[] = "./assets/image/ManuBackground.jpg";
-constexpr char menu_button_img_path[] = "./assets/image/menu_button.png";
 
 /**
  * @brief Game entry.
@@ -136,14 +134,6 @@ Game::game_init() {
 
 	background = IC->get(background_img_path);
 
-	menu_background = IC->get(manu_background_img_path);
-	start_button = IC->get(menu_button_img_path);
-	double button_width = al_get_bitmap_width(start_button);
-	double button_height = al_get_bitmap_height(start_button);
-	start_button_area = Rectangle(
-		DC->window_width/2.0 - button_width/2.0,	// upper-left x (centered)
-		DC->window_height/2.0 - button_height/2.0,	// upper-left y
-		button_width, button_height);	// lower-right x, y
 	debug_log("Game state: change to MENU\n");
 	state = STATE::MENU;	// initial state
 	al_start_timer(timer);
@@ -161,16 +151,9 @@ Game::game_update() {
 	OperationCenter *OC = OperationCenter::get_instance();
 	SoundCenter *SC = SoundCenter::get_instance();
 	static ALLEGRO_SAMPLE_INSTANCE *background = nullptr;
-	const Point &mouse = DC->mouse;
 
 	switch(state) {
 		case STATE::MENU: {
-			if(DC->mouse_state[1] && !DC->prev_mouse_state[1]) {
-				if(mouse.overlap(start_button_area)) {
-					debug_log("<Game> state: change to START\n");
-					state = STATE::START;
-				}
-			}
 			break;
 		}
 		case STATE::START: {
@@ -219,8 +202,11 @@ Game::game_update() {
 			return false;
 		}
 	}
+	if(state == STATE::MENU) {
+		ui->update();	// load menu
+	}
 	// If the game is not paused, we should progress update.
-	if(state != STATE::PAUSE) {
+	else if(state != STATE::PAUSE) {
 		DC->player->update();
 		SC->update();
 		ui->update();
@@ -246,7 +232,7 @@ Game::game_draw() {
 
 	// Flush the screen first.
 	al_clear_to_color(al_map_rgb(100, 100, 100));
-	if(state != STATE::END) {
+	if(state != STATE::END && state != STATE::MENU) {
 		// background
 		al_draw_bitmap(background, 0, 0, 0);
 		if(DC->game_field_length < DC->window_width)
@@ -266,11 +252,9 @@ Game::game_draw() {
 			OC->draw();
 		}
 	}
-	if(state == STATE::MENU){
-		al_draw_bitmap(menu_background, 0, 0, 0);
-	}
 	switch(state) {
-		case STATE::START: {
+		case STATE::MENU: {
+		}case STATE::START: {
 		} case STATE::LEVEL: {
 			break;
 		} case STATE::PAUSE: {

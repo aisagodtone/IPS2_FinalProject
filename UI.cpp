@@ -17,12 +17,17 @@ constexpr char love_img_path[] = "./assets/image/love.png";
 constexpr int love_img_padding = 5;
 constexpr int tower_img_left_padding = 30;
 constexpr int tower_img_top_padding = 30;
+constexpr char menu_background_img_path[] = "./assets/image/MenuBackground.jpg";
+constexpr char menu_button_img_path[] = "./assets/image/menu_button.png";
 
+bool menu_drew = false;
 void
 UI::init() {
 	DataCenter *DC = DataCenter::get_instance();
 	ImageCenter *IC = ImageCenter::get_instance();
 	love = IC->get(love_img_path);
+	menu_background = IC->get(menu_background_img_path);
+	menu_button = IC->get(menu_button_img_path);
 	int tl_x = DC->game_field_length + tower_img_left_padding;
 	int tl_y = tower_img_top_padding;
 	int max_height = 0;
@@ -40,8 +45,8 @@ UI::init() {
 		tl_x += w + tower_img_left_padding;
 		max_height = std::max(max_height, h);
 	}
-	debug_log("<UI> state: change to HALT\n");
-	state = STATE::HALT;
+	debug_log("<UI> state: change to MENU\n");
+	state = STATE::MENU;
 	on_item = -1;
 }
 
@@ -51,6 +56,26 @@ UI::update() {
 	const Point &mouse = DC->mouse;
 
 	switch(state) {
+		case STATE::MENU:{
+			if(!menu_drew){
+				UI::draw_menu();
+			}
+			int w = al_get_bitmap_width(menu_button);
+			int h = al_get_bitmap_height(menu_button);
+			int x = DC->window_width / 2.0 - w / 2.0;
+			int y = DC->window_height / 2.0 - h / 2.0;
+			Rectangle start_button_area = Rectangle(x, y, x + w, y + h);
+			while(state == STATE::MENU){
+				if(mouse.overlap(start_button_area)){
+					if(DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+						debug_log("<UI> state: change to HALT\n");
+						state = STATE::HALT;
+						menu_drew = false;
+						break;
+					}
+				}
+				}
+		}
 		case STATE::HALT: {
 			for(size_t i = 0; i < tower_items.size(); ++i) {
 				auto &[bitmap, p, price] = tower_items[i];
@@ -160,6 +185,9 @@ UI::draw() {
 
 	switch(state) {
 		static Tower *selected_tower = nullptr;
+		case STATE::MENU: {
+			break;
+		}
 		case STATE::HALT: {
 			// No tower should be selected for HALT state.
 			if(selected_tower != nullptr) {
@@ -194,4 +222,26 @@ UI::draw() {
 			break;
 		}
 	}
+}
+
+void UI::draw_menu(){
+	DataCenter *DC = DataCenter::get_instance();
+	FontCenter *FC = FontCenter::get_instance();
+	double button_width = al_get_bitmap_width(menu_button);
+	double button_height = al_get_bitmap_height(menu_button);
+	Rectangle start_button_area = Rectangle(
+		DC->window_width/2.0 - button_width/2.0,	// upper-left x (centered)
+		DC->window_height/2.0 - button_height/2.0,	// upper-left y
+		DC->window_width/2.0 - button_width/2.0 + button_width,	// lower-right x
+		DC->window_height/2.0 - button_height/2.0 + button_height);	// lower-right y
+	al_clear_to_color(al_map_rgb(100, 100, 100));
+	al_draw_bitmap(menu_background, 0, 0, 0);
+	al_draw_bitmap(menu_button, start_button_area.x1, start_button_area.y1, 0);
+	al_draw_text(
+		FC->courier_new[FontSize::MEDIUM], al_map_rgb(0, 0, 0),
+		start_button_area.center_x(), start_button_area.center_y() - 10,
+		ALLEGRO_ALIGN_CENTRE, "START");
+	al_flip_display();
+	menu_drew = true;
+	debug_log("menu drew\n");
 }

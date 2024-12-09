@@ -9,8 +9,8 @@
 // fixed settings
 namespace DataSetting {
 	constexpr double FPS = 60;
-	constexpr int window_width = 800;
-	constexpr int window_height = 600;
+	constexpr int window_width = 1280;
+	constexpr int window_height = 720;
 	constexpr int game_field_length = 600;
 }
 
