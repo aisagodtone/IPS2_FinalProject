@@ -17,17 +17,12 @@ constexpr char love_img_path[] = "./assets/image/love.png";
 constexpr int love_img_padding = 5;
 constexpr int tower_img_left_padding = 30;
 constexpr int tower_img_top_padding = 30;
-constexpr char menu_background_img_path[] = "./assets/image/MenuBackground.jpg";
-constexpr char menu_button_img_path[] = "./assets/image/menu_button.png";
 
-bool menu_drew = false;
 void
 UI::init() {
 	DataCenter *DC = DataCenter::get_instance();
 	ImageCenter *IC = ImageCenter::get_instance();
 	love = IC->get(love_img_path);
-	menu_background = IC->get(menu_background_img_path);
-	menu_button = IC->get(menu_button_img_path);
 	int tl_x = DC->game_field_length + tower_img_left_padding;
 	int tl_y = tower_img_top_padding;
 	int max_height = 0;
@@ -45,8 +40,8 @@ UI::init() {
 		tl_x += w + tower_img_left_padding;
 		max_height = std::max(max_height, h);
 	}
-	debug_log("<UI> state: change to MENU\n");
-	state = STATE::MENU;
+	debug_log("<UI> state: change to HALT\n");
+	state = STATE::HALT;
 	on_item = -1;
 }
 
@@ -56,26 +51,6 @@ UI::update() {
 	const Point &mouse = DC->mouse;
 
 	switch(state) {
-		case STATE::MENU:{
-			if(!menu_drew){
-				UI::draw_menu();
-			}
-			int w = al_get_bitmap_width(menu_button);
-			int h = al_get_bitmap_height(menu_button);
-			int x = DC->window_width / 2.0 - w / 2.0;
-			int y = DC->window_height / 2.0 - h / 2.0;
-			Rectangle start_button_area = Rectangle(x, y, x + w, y + h);
-			while(state == STATE::MENU){
-				if(mouse.overlap(start_button_area)){
-					if(DC->mouse_state[1] && !DC->prev_mouse_state[1]){
-						debug_log("<UI> state: change to HALT\n");
-						state = STATE::HALT;
-						menu_drew = false;
-						break;
-					}
-				}
-				}
-		}
 		case STATE::HALT: {
 			for(size_t i = 0; i < tower_items.size(); ++i) {
 				auto &[bitmap, p, price] = tower_items[i];
@@ -130,19 +105,6 @@ UI::update() {
 			int w = al_get_bitmap_width(bitmap);
 			int h = al_get_bitmap_height(bitmap);
 			Rectangle place_region{mouse.x - w / 2, mouse.y - h / 2, DC->mouse.x + w / 2, DC->mouse.y + h / 2};
-			bool place = true;
-			// tower cannot be placed on the road
-			place &= (!DC->level->is_onroad(place_region));
-			// tower cannot intersect with other towers
-			for(Tower *tower : DC->towers) {
-				place &= (!place_region.overlap(tower->get_region()));
-			}
-			if(!place) {
-				debug_log("<UI> Tower place failed.\n");
-			} else {
-				DC->towers.emplace_back(Tower::create_tower(static_cast<TowerType>(on_item), mouse));
-				DC->player->coin -= std::get<2>(tower_items[on_item]);
-			}
 			debug_log("<UI> state: change to HALT\n");
 			state = STATE::HALT;
 			break;
@@ -153,8 +115,6 @@ UI::update() {
 void
 UI::draw() {
 	DataCenter *DC = DataCenter::get_instance();
-	FontCenter *FC = FontCenter::get_instance();
-	const Point &mouse = DC->mouse;
 	// draw HP
 	const int &game_field_length = DC->game_field_length;
 	const int &player_HP = DC->player->HP;
@@ -162,86 +122,4 @@ UI::draw() {
 	for(int i = 1; i <= player_HP; ++i) {
 		al_draw_bitmap(love, game_field_length - (love_width + love_img_padding) * i, love_img_padding, 0);
 	}
-	// draw coin
-	const int &player_coin = DC->player->coin;
-	al_draw_textf(
-		FC->courier_new[FontSize::MEDIUM], al_map_rgb(0, 0, 0),
-		game_field_length+love_img_padding, love_img_padding,
-		ALLEGRO_ALIGN_LEFT, "coin: %5d", player_coin);
-	// draw tower shop items
-	for(auto &[bitmap, p, price] : tower_items) {
-		int w = al_get_bitmap_width(bitmap);
-		int h = al_get_bitmap_height(bitmap);
-		al_draw_bitmap(bitmap, p.x, p.y, 0);
-		al_draw_rectangle(
-			p.x - 1, p.y - 1,
-			p.x + w + 1, p.y + h + 1,
-			al_map_rgb(0, 0, 0), 1);
-		al_draw_textf(
-			FC->courier_new[FontSize::MEDIUM], al_map_rgb(0, 0, 0),
-			p.x + w / 2, p.y + h,
-			ALLEGRO_ALIGN_CENTRE, "%d", price);
-	}
-
-	switch(state) {
-		static Tower *selected_tower = nullptr;
-		case STATE::MENU: {
-			break;
-		}
-		case STATE::HALT: {
-			// No tower should be selected for HALT state.
-			if(selected_tower != nullptr) {
-				delete selected_tower;
-				selected_tower = nullptr;
-			}
-			break;
-		} case STATE::HOVER: {
-			auto &[bitmap, p, price] = tower_items[on_item];
-			int w = al_get_bitmap_width(bitmap);
-			int h = al_get_bitmap_height(bitmap);
-			// Create a semitransparent mask covered on the hovered tower.
-			al_draw_filled_rectangle(p.x, p.y, p.x + w, p.y + h, al_map_rgba(50, 50, 50, 64));
-			break;
-		}
-		case STATE::SELECT: {
-			// If a tower is selected, we new a corresponding tower for previewing purpose.
-			if(selected_tower == nullptr) {
-				selected_tower = Tower::create_tower(static_cast<TowerType>(on_item), mouse);
-			} else {
-				selected_tower->shape->update_center_x(mouse.x);
-				selected_tower->shape->update_center_y(mouse.y);
-			}
-		}
-		case STATE::PLACE: {
-			// If we select a tower from menu, we need to preview where the tower will be built and its attack range.
-			ALLEGRO_BITMAP *bitmap = Tower::get_bitmap(static_cast<TowerType>(on_item));
-			al_draw_filled_circle(mouse.x, mouse.y, selected_tower->attack_range(), al_map_rgba(255, 0, 0, 32));
-			int w = al_get_bitmap_width(bitmap);
-			int h = al_get_bitmap_height(bitmap);
-			al_draw_bitmap(bitmap, mouse.x - w / 2, mouse.y - h / 2, 0);
-			break;
-		}
-	}
-}
-
-void UI::draw_menu(){
-	DataCenter *DC = DataCenter::get_instance();
-	FontCenter *FC = FontCenter::get_instance();
-	double button_width = al_get_bitmap_width(menu_button);
-	double button_height = al_get_bitmap_height(menu_button);
-	Rectangle start_button_area = Rectangle(
-		DC->window_width/2.0 - button_width/2.0,	// upper-left x (centered)
-		DC->window_height/2.0 - button_height/2.0,	// upper-left y
-		DC->window_width/2.0 - button_width/2.0 + button_width,	// lower-right x
-		DC->window_height/2.0 - button_height/2.0 + button_height);	// lower-right y
-	al_clear_to_color(al_map_rgb(100, 100, 100));
-	al_draw_bitmap(menu_background, 0, 0, 0);
-	al_draw_bitmap(menu_button, start_button_area.x1, start_button_area.y1, 0);
-	al_draw_text(
-		FC->courier_new[FontSize::MEDIUM], al_map_rgb(0, 0, 0),
-		start_button_area.center_x(), start_button_area.center_y() - 10,
-		ALLEGRO_ALIGN_CENTRE, "START");
-	al_flip_display();
-	menu_drew = true;
-	debug_log("menu drew\n");
 }

@@ -24,8 +24,6 @@ private:
 	 * @see Game::game_update()
 	 */
 	enum class STATE {
-		MENU,
-		// (?)SETTINGS,
 		START, // -> LEVEL
 		LEVEL, // -> PAUSE, END
 		PAUSE, // -> LEVEL

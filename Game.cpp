@@ -7,6 +7,7 @@
 #include "data/FontCenter.h"
 #include "Player.h"
 #include "Level.h"
+#include "hero.h"
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
@@ -131,11 +132,12 @@ Game::game_init() {
 	ui->init();
 
 	DC->level->init();
+	DC->hero->init();
 
+	// game start
 	background = IC->get(background_img_path);
-
-	debug_log("Game state: change to MENU\n");
-	state = STATE::MENU;	// initial state
+	debug_log("Game state: change to START\n");
+	state = STATE::START;
 	al_start_timer(timer);
 }
 
@@ -153,9 +155,6 @@ Game::game_update() {
 	static ALLEGRO_SAMPLE_INSTANCE *background = nullptr;
 
 	switch(state) {
-		case STATE::MENU: {
-			break;
-		}
 		case STATE::START: {
 			static bool is_played = false;
 			static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
@@ -182,10 +181,10 @@ Game::game_update() {
 				debug_log("<Game> state: change to PAUSE\n");
 				state = STATE::PAUSE;
 			}
-			if(DC->level->remain_monsters() == 0 && DC->monsters.size() == 0) {
+			/*if(DC->level->remain_monsters() == 0 && DC->monsters.size() == 0) {
 				debug_log("<Game> state: change to END\n");
 				state = STATE::END;
-			}
+			}*/
 			if(DC->player->HP == 0) {
 				debug_log("<Game> state: change to END\n");
 				state = STATE::END;
@@ -202,16 +201,13 @@ Game::game_update() {
 			return false;
 		}
 	}
-	if(state == STATE::MENU) {
-		ui->update();	// load menu
-	}
 	// If the game is not paused, we should progress update.
-	else if(state != STATE::PAUSE) {
+	if(state != STATE::PAUSE) {
 		DC->player->update();
 		SC->update();
 		ui->update();
 		if(state != STATE::START) {
-			DC->level->update();
+			DC->hero->update();
 			OC->update();
 		}
 	}
@@ -232,7 +228,7 @@ Game::game_draw() {
 
 	// Flush the screen first.
 	al_clear_to_color(al_map_rgb(100, 100, 100));
-	if(state != STATE::END && state != STATE::MENU) {
+	if(state != STATE::END) {
 		// background
 		al_draw_bitmap(background, 0, 0, 0);
 		if(DC->game_field_length < DC->window_width)
@@ -248,13 +244,13 @@ Game::game_draw() {
 		// user interface
 		if(state != STATE::START) {
 			DC->level->draw();
+			DC->hero->draw();
 			ui->draw();
 			OC->draw();
 		}
 	}
 	switch(state) {
-		case STATE::MENU: {
-		}case STATE::START: {
+		case STATE::START: {
 		} case STATE::LEVEL: {
 			break;
 		} case STATE::PAUSE: {

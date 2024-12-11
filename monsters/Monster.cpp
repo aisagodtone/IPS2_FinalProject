@@ -11,7 +11,7 @@
 #include "../Utils.h"
 #include <allegro5/allegro_primitives.h>
 
-using namespace std;
+/*using namespace std;
 
 // fixed settings
 enum class Dir {
@@ -29,13 +29,7 @@ namespace MonsterSetting {
 	};
 }
 
-/**
- * @brief Create a Monster* instance by the type.
- * @param type the type of a monster.
- * @param path walk path of the monster. The path should be represented in road grid format.
- * @return The curresponding Monster* instance.
- * @see Level::grid_to_region(const Point &grid) const
- */
+
 Monster *Monster::create_monster(MonsterType type, const vector<Point> &path) {
 	switch(type) {
 		case MonsterType::WOLF: {
@@ -55,9 +49,7 @@ Monster *Monster::create_monster(MonsterType type, const vector<Point> &path) {
 	GAME_ASSERT(false, "monster type error.");
 }
 
-/**
- * @brief Given velocity of x and y direction, determine which direction the monster should face.
- */
+
 Dir convert_dir(const Point &v) {
 	if(v.y < 0 && abs(v.y) >= abs(v.x))
 		return Dir::UP;
@@ -89,14 +81,8 @@ Monster::Monster(const vector<Point> &path, MonsterType type) {
 	}
 }
 
-/**
- * @details This update function updates the following things in order:
- * @details * Move pose of the current facing direction (bitmap_img_id).
- * @details * Current position (center of the hit box). The position is moved based on the center of the hit box (Rectangle). If the center of this monster reaches the center of the first point of path, the function will proceed to the next point of path.
- * @details * Update the real bounding box by the center of the hit box calculated as above.
- */
-void
-Monster::update() {
+
+void Monster::update() {
 	DataCenter *DC = DataCenter::get_instance();
 	ImageCenter *IC = ImageCenter::get_instance();
 
@@ -171,4 +157,4 @@ Monster::draw() {
 		bitmap,
 		shape->center_x() - al_get_bitmap_width(bitmap) / 2,
 		shape->center_y() - al_get_bitmap_height(bitmap) / 2, 0);
-}
+}*/
