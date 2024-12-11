@@ -17,10 +17,11 @@ public:
 private:
 	enum class STATE {
 		MENU,
-		HALT, // -> HOVER
-		HOVER, // -> HALT, SELECT
-		SELECT, // -> HALT, PLACE
-		PLACE // -> HALT
+		INGAME
+		// HALT, // -> HOVER
+		// HOVER, // -> HALT, SELECT
+		// SELECT, // -> HALT, PLACE
+		// PLACE // -> HALT
 	};
 	STATE state;
 	ALLEGRO_BITMAP *love;

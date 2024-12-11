@@ -154,6 +154,7 @@ Game::game_update() {
 
 	switch(state) {
 		case STATE::MENU: {
+			ui->update(); // load menu
 			break;
 		}
 		case STATE::START: {
@@ -202,11 +203,8 @@ Game::game_update() {
 			return false;
 		}
 	}
-	if(state == STATE::MENU) {
-		ui->update();	// load menu
-	}
 	// If the game is not paused, we should progress update.
-	else if(state != STATE::PAUSE) {
+	if(state != STATE::PAUSE && state != STATE::MENU) {
 		DC->player->update();
 		SC->update();
 		ui->update();
@@ -231,8 +229,8 @@ Game::game_draw() {
 	FontCenter *FC = FontCenter::get_instance();
 
 	// Flush the screen first.
-	al_clear_to_color(al_map_rgb(100, 100, 100));
 	if(state != STATE::END && state != STATE::MENU) {
+		al_clear_to_color(al_map_rgb(100, 100, 100));
 		// background
 		al_draw_bitmap(background, 0, 0, 0);
 		if(DC->game_field_length < DC->window_width)
