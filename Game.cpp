@@ -7,6 +7,7 @@
 #include "data/FontCenter.h"
 #include "Player.h"
 #include "Level.h"
+#include "hero.h"
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
@@ -131,9 +132,10 @@ Game::game_init() {
 	ui->init();
 
 	DC->level->init();
+	DC->hero->init();
 
+	// game start
 	background = IC->get(background_img_path);
-
 	debug_log("Game state: change to MENU\n");
 	state = STATE::MENU;	// initial state
 	al_start_timer(timer);
@@ -154,7 +156,6 @@ Game::game_update() {
 
 	switch(state) {
 		case STATE::MENU: {
-			ui->update(); // load menu
 			break;
 		}
 		case STATE::START: {
@@ -183,10 +184,10 @@ Game::game_update() {
 				debug_log("<Game> state: change to PAUSE\n");
 				state = STATE::PAUSE;
 			}
-			if(DC->level->remain_monsters() == 0 && DC->monsters.size() == 0) {
+			/*if(DC->level->remain_monsters() == 0 && DC->monsters.size() == 0) {
 				debug_log("<Game> state: change to END\n");
 				state = STATE::END;
-			}
+			}*/
 			if(DC->player->HP == 0) {
 				debug_log("<Game> state: change to END\n");
 				state = STATE::END;
@@ -203,13 +204,16 @@ Game::game_update() {
 			return false;
 		}
 	}
+	if(state == STATE::MENU) {
+		ui->update();	// load menu
+	}
 	// If the game is not paused, we should progress update.
-	if(state != STATE::PAUSE && state != STATE::MENU) {
+	else if(state != STATE::PAUSE) {
 		DC->player->update();
 		SC->update();
 		ui->update();
 		if(state != STATE::START) {
-			DC->level->update();
+			DC->hero->update();
 			OC->update();
 		}
 	}
@@ -246,12 +250,13 @@ Game::game_draw() {
 		// user interface
 		if(state != STATE::START) {
 			DC->level->draw();
+			DC->hero->draw();
 			ui->draw();
 			OC->draw();
 		}
 	}
 	switch(state) {
-		case STATE::MENU: {
+		case STATE::MENU:{
 		}case STATE::START: {
 		} case STATE::LEVEL: {
 			break;

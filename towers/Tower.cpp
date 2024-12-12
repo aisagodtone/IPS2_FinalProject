@@ -66,10 +66,10 @@ void
 Tower::update() {
 	if(counter) counter--;
 	else {
-		DataCenter *DC = DataCenter::get_instance();
-		for(Monster *monster : DC->monsters) {
+		//DataCenter *DC = DataCenter::get_instance();
+		/*for(Monster *monster : DC->monsters) {
 			if(attack(monster)) break;
-		}
+		}*/
 	}
 }
 

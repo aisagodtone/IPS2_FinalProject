@@ -9,9 +9,9 @@
 
 class Player;
 class Level;
-class Monster;
 class Tower;
 class Bullet;
+class Hero;
 
 /**
  * @brief Stores generic global data and relatively small data structures.
@@ -40,6 +40,9 @@ public:
 	 * @details The states will be updated once a key is pressed, asynchronously with frame update.
 	 * @see Game::execute()
 	 */
+
+	int map[12][20];
+
 	bool key_state[ALLEGRO_KEY_MAX];
 	/**
 	 * @brief Stores the keyboard states of the previous frame.
@@ -52,6 +55,8 @@ public:
 	 * @details The state will be update once the mouse is moved.
 	 * @see Game::execute()
 	 */
+
+
 	Point mouse;
 	/**
 	 * @brief Stores the state of every mouse button.
@@ -81,7 +86,9 @@ public:
 	 * @brief Raw list of Monster objects.
 	 * @see Monster
 	 */
-	std::vector<Monster*> monsters;
+
+	Hero *hero;
+
 	/**
 	 * @brief Raw list of Tower objects.
 	 * @see Tower
