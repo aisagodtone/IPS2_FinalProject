@@ -28,6 +28,8 @@ UI::init() {
 	DataCenter *DC = DataCenter::get_instance();
 	ImageCenter *IC = ImageCenter::get_instance();
 	love = IC->get(love_img_path);
+	menu_background = IC->get(menu_background_img_path);
+	menu_button = IC->get(menu_button_img_path);
 	int tl_x = DC->game_field_length + tower_img_left_padding;
 	int tl_y = tower_img_top_padding;
 	int max_height = 0;
@@ -66,6 +68,7 @@ UI::update() {
 				if(DC->mouse_state[1] && !DC->prev_mouse_state[1]){
 					debug_log("<UI> state: change to INGAME\n");
 					state = STATE::INGAME;
+					al_clear_to_color(al_map_rgb(100, 100, 100));
 					menu_drew = false;
 					break;
 				}
@@ -73,8 +76,7 @@ UI::update() {
 			break;
 		}
 		case STATE::INGAME:{
-			debug_log("[UI::update()]: in INGAME suite\n");
-			al_clear_to_color(al_map_rgb(100, 100, 100));
+			// no ui need to be drawn in-game
 			break;
 		}
 		// case STATE::HALT: {
@@ -183,4 +185,8 @@ void UI::draw_menu(){
 	al_flip_display();
 	menu_drew = true;
 	debug_log("menu drew\n");
+}
+
+UI::STATE UI::get_state(){
+	return state;
 }

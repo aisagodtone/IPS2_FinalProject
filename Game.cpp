@@ -206,6 +206,10 @@ Game::game_update() {
 	}
 	if(state == STATE::MENU) {
 		ui->update();	// load menu
+		if(ui->get_state() == UI::STATE::INGAME) {
+			debug_log("<Game> state: change to START\n");
+			state = STATE::START;
+		}
 	}
 	// If the game is not paused, we should progress update.
 	else if(state != STATE::PAUSE) {

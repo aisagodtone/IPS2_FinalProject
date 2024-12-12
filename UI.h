@@ -9,12 +9,6 @@
 class UI
 {
 public:
-	UI() {}
-	void init();
-	void update();
-	void draw();
-	void draw_menu();
-private:
 	enum class STATE {
 		MENU,
 		INGAME
@@ -23,6 +17,14 @@ private:
 		// SELECT, // -> HALT, PLACE
 		// PLACE // -> HALT
 	};
+	UI() {}
+	void init();
+	void update();
+	void draw();
+	void draw_menu();
+	STATE get_state();
+
+private:
 	STATE state;
 	ALLEGRO_BITMAP *love;
 	ALLEGRO_BITMAP *menu_background;
