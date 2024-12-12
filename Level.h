@@ -5,6 +5,7 @@
 #include <utility>
 #include <tuple>
 #include "./shapes/Rectangle.h"
+#include <allegro5/bitmap.h>
 
 /**
  * @brief The class manages data of each level.
@@ -21,9 +22,6 @@ public:
 	
 private:
 	/**
-	 * @brief Stores the monster's attack route, whose Point is represented in grid format.
-	 */
-	/**
 	 * @brief The index of current level.
 	 */
 	int level;
@@ -35,12 +33,9 @@ private:
 	 * @brief Number of grid in y-direction.
 	 */
 	int grid_h;
-	/**
-	 * @brief Time remaining for the next monster to spawn.
-	 */
-	/**
-	 * @brief Number of each different type of monsters.
-	 */
+
+	// bitmap of block
+	ALLEGRO_BITMAP *block;
 };
 
 #endif

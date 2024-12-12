@@ -175,8 +175,8 @@ void UI::draw_menu(){
 		DC->window_height/2.0 - button_height/2.0,	// upper-left y
 		DC->window_width/2.0 - button_width/2.0 + button_width,	// lower-right x
 		DC->window_height/2.0 - button_height/2.0 + button_height);	// lower-right y
-	al_clear_to_color(al_map_rgb(100, 100, 100));
-	al_draw_bitmap(menu_background, 0, 0, 0);
+	al_clear_to_color(al_map_rgb(0, 0, 0));	// set base color to black
+	al_draw_bitmap(menu_background, 0, 24, 0);	// height of window is 768, manu background is 720 => shift down 24
 	al_draw_bitmap(menu_button, start_button_area.x1, start_button_area.y1, 0);
 	al_draw_text(
 		FC->courier_new[FontSize::MEDIUM], al_map_rgb(0, 0, 0),

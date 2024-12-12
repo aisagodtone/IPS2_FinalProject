@@ -2,6 +2,7 @@
 #include <string>
 #include "Utils.h"
 #include "data/DataCenter.h"
+#include "data/ImageCenter.h"
 #include <allegro5/allegro_primitives.h>
 #include "shapes/Point.h"
 #include "shapes/Rectangle.h"
@@ -18,12 +19,16 @@ namespace LevelSetting {
 		40, 40, 40, 40
 	};
 };
+constexpr char block_img_path[] = "./assets/image/block.png";
 
 void
 Level::init() {
 	level = -1;
 	grid_w = -1;
 	grid_h = -1;
+
+	ImageCenter *IC = ImageCenter::get_instance();
+	block = IC->get(block_img_path);
 }
 
 /**
@@ -46,14 +51,13 @@ Level::load_level(int lvl) {
 	GAME_ASSERT(f != nullptr, "cannot find level.");
 	level = lvl;
 	memset(DC->map, 0 , sizeof(DC->map));
-	// read total number of monsters & number of each monsters
+	// read each grid
 	for(int i = 0; i < 12; ++i) {
 		for(int j = 0; j < 20; j++){
 			fscanf(f, "%d", &DC->map[i][j]);
 		}
 	}
 
-	// read road path
 	fclose(f);
 	debug_log("<Level> load level %d.\n", lvl);
 }
@@ -66,7 +70,16 @@ Level::load_level(int lvl) {
 void
 Level::draw() {
 	if(level == -1) return;
-	
+
+	// draw block on the map (1 in LEVEL file -> block)
+	for (int i = 0; i < 12; i++) {
+		for (int j = 0; j < 20; j++) {
+			if(DataCenter::get_instance()->map[i][j] == 1){
+				al_draw_bitmap(block, j * 64, i * 64, 0);
+			}
+		}
+	}
+	al_flip_display();
 }
 
 
