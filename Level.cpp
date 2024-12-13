@@ -71,10 +71,11 @@ void
 Level::draw() {
 	if(level == -1) return;
 
+	DataCenter *DC = DataCenter::get_instance();
 	// draw block on the map (1 in LEVEL file -> block)
 	for (int i = 0; i < 12; i++) {
 		for (int j = 0; j < 20; j++) {
-			if(DataCenter::get_instance()->map[i][j] == 1){
+			if(DC->map[i][j] == 1){
 				al_draw_bitmap(block, j * 64, i * 64, 0);
 			}
 		}

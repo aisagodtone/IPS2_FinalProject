@@ -11,7 +11,6 @@ enum class HeroState {
 	RIGHT,
 	FRONT,
 	BACK,
-	STOP,
 	HEROSTATE_MAX
 };
 
@@ -63,7 +62,8 @@ protected:
 
 private:
 	HeroState state = HeroState::FRONT;
-	double speed = 2.5;
+	double speed = 2;
+	int hero_posX, hero_posY;
 	std::map< HeroState, std::string> gifPath;
 };
 
