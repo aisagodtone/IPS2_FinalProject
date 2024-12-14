@@ -60,56 +60,76 @@ void Hero::update(){
 	SoundCenter *SC = SoundCenter::get_instance();
 	if(DC->key_state[ALLEGRO_KEY_W]){
 		debug_log("hero in map x:%d y: %d \n",hero_posY  ,hero_posX );
-		if(DC->map[(static_cast<int>(shape->center_y() - speed))/64][hero_posY] == '1'
-			|| DC->map[(static_cast<int>(shape->center_y() - speed))/64][hero_posY] == 'D'
-			|| DC->map[(static_cast<int>(shape->center_y() - speed))/64][hero_posY] == 'C'
-			|| DC->map[(static_cast<int>(shape->center_y() - speed))/64][hero_posY] == 'B'
-			|| DC->map[(static_cast<int>(shape->center_y() - speed))/64][hero_posY] == 'O'){
+		if(DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == '1'
+			|| DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == 'D'
+			|| DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == 'C'
+			|| DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == 'B'
+			|| DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == 'O'){
 			return;
 		}
-		shape->update_center_y(shape->center_y()- speed);
+		if(DC->key_state[ALLEGRO_KEY_LSHIFT]){
+			shape->update_center_y(shape->center_y() - run_speed);
+		}
+		else{
+			shape->update_center_y(shape->center_y()- speed);
+		}
 		hero_posX = shape->center_y()/64;
 		debug_log("update hitbox center x:%lf y: %lf \n", shape->center_x() , shape->center_y());
 		state = HeroState::BACK;
 	}
 	else if(DC->key_state[ALLEGRO_KEY_A]){
 		debug_log("hero in map x:%d y: %d \n",hero_posY  ,hero_posX );
-		if(DC->map[hero_posX][(static_cast<int>(shape->center_x()- speed))/64] == '1'
-			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - speed))/64] == 'D'
-			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - speed))/64] == 'C'
-			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - speed))/64] == 'B'
-			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - speed))/64] == 'O'){
+		if(DC->map[hero_posX][(static_cast<int>(shape->center_x()- run_speed))/64] == '1'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - run_speed))/64] == 'D'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - run_speed))/64] == 'C'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - run_speed))/64] == 'B'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - run_speed))/64] == 'O'){
 			return;
 		}
-		shape->update_center_x(shape->center_x()- speed);
+		if(DC->key_state[ALLEGRO_KEY_LSHIFT]){
+			shape->update_center_x(shape->center_x() - run_speed);
+		}
+		else{
+			shape->update_center_x(shape->center_x()- speed);
+		}
 		hero_posY = shape->center_x()/64;
 		debug_log("update hitbox center x:%lf y: %lf \n", shape->center_x() , shape->center_y());
 		state = HeroState::LEFT;
 	}
 	else if(DC->key_state[ALLEGRO_KEY_S]){
 		debug_log("hero in map x:%d y: %d \n",hero_posY  ,hero_posX );
-		if(DC->map[(static_cast<int>(shape->center_y()+ speed))/64][hero_posY] == '1'
-			|| DC->map[(static_cast<int>(shape->center_y() + speed))/64][hero_posY] == 'D'
-			|| DC->map[(static_cast<int>(shape->center_y() + speed))/64][hero_posY] == 'C'
-			|| DC->map[(static_cast<int>(shape->center_y() + speed))/64][hero_posY] == 'B'
-			|| DC->map[(static_cast<int>(shape->center_y() + speed))/64][hero_posY] == 'O'){
+		if(DC->map[(static_cast<int>(shape->center_y()+ run_speed))/64][hero_posY] == '1'
+			|| DC->map[(static_cast<int>(shape->center_y() + run_speed))/64][hero_posY] == 'D'
+			|| DC->map[(static_cast<int>(shape->center_y() + run_speed))/64][hero_posY] == 'C'
+			|| DC->map[(static_cast<int>(shape->center_y() + run_speed))/64][hero_posY] == 'B'
+			|| DC->map[(static_cast<int>(shape->center_y() + run_speed))/64][hero_posY] == 'O'){
 			return;
 		}
-		shape->update_center_y(shape->center_y()+ speed);
+		if(DC->key_state[ALLEGRO_KEY_LSHIFT]){
+			shape->update_center_y(shape->center_y() + run_speed);
+		}
+		else{
+			shape->update_center_y(shape->center_y()+ speed);
+		}
 		hero_posX = shape->center_y()/64;
 		debug_log("update hitbox center x:%lf y: %lf \n", shape->center_x() , shape->center_y());
 		state = HeroState::FRONT;
 	}
 	else if(DC->key_state[ALLEGRO_KEY_D]){
 		debug_log("hero in map x:%d y: %d \n",hero_posY  ,hero_posX );
-		if(DC->map[hero_posX][(static_cast<int>(shape->center_x() + speed))/64] == '1'
-			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + speed))/64] == 'D'
-			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + speed))/64] == 'C'
-			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + speed))/64] == 'B'
-			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + speed))/64] == 'O'){
+		if(DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == '1'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == 'D'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == 'C'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == 'B'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == 'O'){
 			return;
 		}
-		shape->update_center_x(shape->center_x()+ speed);
+		if(DC->key_state[ALLEGRO_KEY_LSHIFT]){
+			shape->update_center_x(shape->center_x() + run_speed);
+		}
+		else{
+			shape->update_center_x(shape->center_x()+ speed);
+		}
 		hero_posY = shape->center_x()/64;
 		debug_log("update hitbox center x:%lf y: %lf \n", shape->center_x() , shape->center_y());
 		state = HeroState::RIGHT;

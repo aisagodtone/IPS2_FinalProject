@@ -63,6 +63,7 @@ protected:
 private:
 	HeroState state = HeroState::FRONT;
 	double speed = 2;
+	double run_speed = 10;
 	int hero_posX, hero_posY;
 	std::map< HeroState, std::string> gifPath;
 };
