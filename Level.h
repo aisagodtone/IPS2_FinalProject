@@ -36,6 +36,10 @@ private:
 
 	// bitmap of block
 	ALLEGRO_BITMAP *block;
+	ALLEGRO_BITMAP *closet;
+	ALLEGRO_BITMAP *chest;
+	ALLEGRO_BITMAP *chest_opened;
+	ALLEGRO_BITMAP *door;
+	ALLEGRO_BITMAP *door_opened;
 };
-
 #endif
