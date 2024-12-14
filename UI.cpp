@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "towers/Tower.h"
 #include "Level.h"
+#include "data/SoundCenter.h"
 
 // fixed settings
 constexpr char love_img_path[] = "./assets/image/love.png";
@@ -19,6 +20,7 @@ constexpr int tower_img_left_padding = 30;
 constexpr int tower_img_top_padding = 30;
 constexpr char menu_background_img_path[] = "./assets/image/MenuBackground.jpg";
 constexpr char menu_button_img_path[] = "./assets/image/menu_button.png";
+constexpr char menu_bgm_sound_path[] = "./assets/sound/menu_bgm.wav";
 
 bool menu_drew = false;
 Rectangle start_button_area;
@@ -55,12 +57,19 @@ UI::init() {
 void
 UI::update() {
 	DataCenter *DC = DataCenter::get_instance();
+	SoundCenter *SC = SoundCenter::get_instance();
 	const Point &mouse = DC->mouse;
+	static ALLEGRO_SAMPLE_INSTANCE *menu_bgm = nullptr;
 
 	switch(state) {
 		case STATE::MENU:{
 			if(!menu_drew){
 				UI::draw_menu();
+				static bool menu_bgm_played = false;
+				if(!menu_bgm_played){
+					menu_bgm = SC->play(menu_bgm_sound_path, ALLEGRO_PLAYMODE_LOOP);
+					menu_bgm_played = true;
+				}
 				break;
 			}
 			if(mouse.overlap(start_button_area)){
@@ -68,6 +77,7 @@ UI::update() {
 				if(DC->mouse_state[1] && !DC->prev_mouse_state[1]){
 					debug_log("<UI> state: change to INGAME\n");
 					state = STATE::INGAME;
+					SC->toggle_playing(menu_bgm);
 					al_clear_to_color(al_map_rgb(100, 100, 100));
 					menu_drew = false;
 					break;

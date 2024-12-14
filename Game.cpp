@@ -21,7 +21,7 @@
 constexpr char game_icon_img_path[] = "./assets/image/game_icon.png";
 constexpr char game_start_sound_path[] = "./assets/sound/growl.wav";
 constexpr char background_img_path[] = "./assets/image/StartBackground.jpg";
-constexpr char background_sound_path[] = "./assets/sound/BackgroundMusic.ogg";
+constexpr char ingame_background_sound_path[] = "./assets/sound/ingame_bgm.mp3";
 
 
 
@@ -178,7 +178,7 @@ Game::game_update() {
 		} case STATE::LEVEL: {
 			static bool BGM_played = false;
 			if(!BGM_played) {
-				background = SC->play(background_sound_path, ALLEGRO_PLAYMODE_LOOP);
+				background = SC->play(ingame_background_sound_path, ALLEGRO_PLAYMODE_LOOP);
 				BGM_played = true;
 			}
 

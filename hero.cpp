@@ -4,6 +4,7 @@
 #include <cstdio>
 #include "shapes/Rectangle.h"
 #include "Utils.h"
+#include "data/SoundCenter.h"
 
 using namespace std;
 
@@ -20,7 +21,7 @@ namespace HeroSetting {
 	};
 }
 
-
+constexpr char chest_sound_path[] = "./assets/sound/chest_open.wav";
 
 void Hero::init(pair<size_t, size_t> pos){
 	int grid = 64;
@@ -56,6 +57,7 @@ void Hero::draw(){
 
 void Hero::update(){
 	DataCenter *DC = DataCenter::get_instance();
+	SoundCenter *SC = SoundCenter::get_instance();
 	if(DC->key_state[ALLEGRO_KEY_W]){
 		debug_log("hero in map x:%d y: %d \n",hero_posY  ,hero_posX );
 		if(DC->map[(static_cast<int>(shape->center_y() - speed))/64][hero_posY] == '1'
@@ -116,20 +118,20 @@ void Hero::update(){
 		// press ENTER next to a chest to open it
 		debug_log("Enter pressed\n");
 		if(hero_posX+1 < 20 && DC->map[hero_posX+1][hero_posY] == 'B'){
+			SC->play(chest_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			DC->map[hero_posX+1][hero_posY] = 'O';
-			debug_log("open chest at right side\n");
 		} 
 		else if(hero_posX-1 >= 0 && DC->map[hero_posX-1][hero_posY] == 'B'){
+			SC->play(chest_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			DC->map[hero_posX-1][hero_posY] = 'O';
-			debug_log("open chest at left side\n");
 		}
 		else if(hero_posY+1 < 12 && DC->map[hero_posX][hero_posY+1] == 'B'){
+			SC->play(chest_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			DC->map[hero_posX][hero_posY+1] = 'O';
-			debug_log("open chest at bottom\n");
 		}
 		else if(hero_posY-1 >= 0 && DC->map[hero_posX][hero_posY-1] == 'B'){
+			SC->play(chest_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			DC->map[hero_posX][hero_posY-1] = 'O';
-			debug_log("open chest at top\n");
 		}
 	}
 }
