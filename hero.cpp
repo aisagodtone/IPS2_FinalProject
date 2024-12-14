@@ -14,10 +14,10 @@ enum class Dir {
 };
 
 namespace HeroSetting {
-	static constexpr char gif_root_path[40] ="./assets/gif/hero";
+	static constexpr char gif_root_path[40] ="./assets/gif/Player";
 
 	static constexpr char dir_path_prefix[][10] = {
-		"left", "right", "front", "back"
+		"left", "right", "down", "up"
 	};
 }
 
@@ -31,7 +31,7 @@ void Hero::init(pair<size_t, size_t> pos){
 	for(size_t i = 0; i < static_cast<size_t>(HeroState::HEROSTATE_MAX); ++i){
 		char buffer[50];
 		sprintf(
-			buffer, "%s/dragonite_%s.gif",
+			buffer, "%s/walk_%s.gif",
 			HeroSetting::gif_root_path,
 			HeroSetting::dir_path_prefix[static_cast<int>(i)]
 		);
@@ -61,7 +61,7 @@ void Hero::update(){
 	SoundCenter *SC = SoundCenter::get_instance();
 	// WASD movements, LSHIFT for running, and blocking objects handling
 	if(DC->key_state[ALLEGRO_KEY_W]){
-		debug_log("hero in map x:%d y: %d \n",hero_posY  ,hero_posX );
+		debug_log("Player in map x:%d y: %d \n",hero_posY  ,hero_posX );
 		if(DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == '1'
 			|| DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == 'D'
 			|| DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == 'C'
@@ -81,7 +81,7 @@ void Hero::update(){
 		state = HeroState::BACK;
 	}
 	else if(DC->key_state[ALLEGRO_KEY_A]){
-		debug_log("hero in map x:%d y: %d \n",hero_posY  ,hero_posX );
+		debug_log("Player in map x:%d y: %d \n",hero_posY  ,hero_posX );
 		if(DC->map[hero_posX][(static_cast<int>(shape->center_x()- run_speed))/64] == '1'
 			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - run_speed))/64] == 'D'
 			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - run_speed))/64] == 'C'
@@ -101,7 +101,7 @@ void Hero::update(){
 		state = HeroState::LEFT;
 	}
 	else if(DC->key_state[ALLEGRO_KEY_S]){
-		debug_log("hero in map x:%d y: %d \n",hero_posY  ,hero_posX );
+		debug_log("Player in map x:%d y: %d \n",hero_posY  ,hero_posX );
 		if(DC->map[(static_cast<int>(shape->center_y()+ run_speed))/64][hero_posY] == '1'
 			|| DC->map[(static_cast<int>(shape->center_y() + run_speed))/64][hero_posY] == 'D'
 			|| DC->map[(static_cast<int>(shape->center_y() + run_speed))/64][hero_posY] == 'C'
@@ -121,7 +121,7 @@ void Hero::update(){
 		state = HeroState::FRONT;
 	}
 	else if(DC->key_state[ALLEGRO_KEY_D]){
-		debug_log("hero in map x:%d y: %d \n",hero_posY  ,hero_posX );
+		debug_log("Player in map x:%d y: %d \n",hero_posY  ,hero_posX );
 		if(DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == '1'
 			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == 'D'
 			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == 'C'
@@ -148,7 +148,7 @@ void Hero::update(){
 			// chest or key chest at right side
 			if(DC->map[hero_posX+1][hero_posY] == 'K'){
 				have_key = true;
-				debug_log("fonud key\n");
+				debug_log("Fonud key\n");
 			}
 			SC->play(chest_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			DC->map[hero_posX+1][hero_posY] = 'O';
@@ -158,7 +158,7 @@ void Hero::update(){
 			// chest or key chest at left side
 			if(DC->map[hero_posX-1][hero_posY] == 'K'){
 				have_key = true;
-				debug_log("fonud key\n");
+				debug_log("Fonud key\n");
 			}
 			SC->play(chest_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			DC->map[hero_posX-1][hero_posY] = 'O';
@@ -168,7 +168,7 @@ void Hero::update(){
 			// chest or key chest at bottom
 			if(DC->map[hero_posX][hero_posY+1] == 'K'){
 				have_key = true;
-				debug_log("fonud key\n");
+				debug_log("Fonud key\n");
 			}
 			SC->play(chest_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			DC->map[hero_posX][hero_posY+1] = 'O';
@@ -178,7 +178,7 @@ void Hero::update(){
 			// chest or key chest at top
 			if(DC->map[hero_posX][hero_posY-1] == 'K'){
 				have_key = true;
-				debug_log("fonud key\n");
+				debug_log("Fonud key\n");
 			}
 			SC->play(chest_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			DC->map[hero_posX][hero_posY-1] = 'O';
