@@ -29,6 +29,7 @@ private:
 	STATE state;
 	ALLEGRO_BITMAP *love;
 	ALLEGRO_BITMAP *key;
+	ALLEGRO_BITMAP *no_key;
 	ALLEGRO_BITMAP *menu_background;
 	ALLEGRO_BITMAP *menu_button;
 	// tower menu bitmap, (top-left x, top-left y), price

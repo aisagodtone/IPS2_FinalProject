@@ -17,6 +17,7 @@
 constexpr char love_img_path[] = "./assets/image/love.png";
 constexpr int love_img_padding = 5;
 constexpr char key_img_path[] = "./assets/image/key.png";
+constexpr char no_key_img_path[] = "./assets/image/no_key.png";
 constexpr char menu_background_img_path[] = "./assets/image/MenuBackground.jpg";
 constexpr char menu_button_img_path[] = "./assets/image/menu_button.png";
 constexpr char menu_bgm_sound_path[] = "./assets/sound/menu_bgm.wav";
@@ -29,6 +30,7 @@ UI::init() {
 	ImageCenter *IC = ImageCenter::get_instance();
 	love = IC->get(love_img_path);
 	key = IC->get(key_img_path);
+	no_key = IC->get(no_key_img_path);
 	menu_background = IC->get(menu_background_img_path);
 	menu_button = IC->get(menu_button_img_path);
 	debug_log("<UI> state: change to MENU\n");
@@ -70,77 +72,6 @@ UI::update() {
 			// no ui need to be drawn in-game
 			break;
 		}
-		// case STATE::HALT: {
-		// 	for(size_t i = 0; i < tower_items.size(); ++i) {
-		// 		auto &[bitmap, p, price] = tower_items[i];
-		// 		int w = al_get_bitmap_width(bitmap);
-		// 		int h = al_get_bitmap_height(bitmap);
-		// 		// hover on a shop tower item
-		// 		if(mouse.overlap(Rectangle{p.x, p.y, p.x+w, p.y+h})) {
-		// 			on_item = i;
-		// 			debug_log("<UI> state: change to HOVER\n");
-		// 			state = STATE::HOVER;
-		// 			break;
-		// 		}
-		// 	}
-		// 	break;
-		// } case STATE::HOVER: {
-		// 	auto &[bitmap, p, price] = tower_items[on_item];
-		// 	int w = al_get_bitmap_width(bitmap);
-		// 	int h = al_get_bitmap_height(bitmap);
-		// 	if(!mouse.overlap(Rectangle{p.x, p.y, p.x+w, p.y+h})) {
-		// 		on_item = -1;
-		// 		debug_log("<UI> state: change to HALT\n");
-		// 		state = STATE::HALT;
-		// 		break;
-		// 	}
-		// 	// click mouse left button
-		// 	if(DC->mouse_state[1] && !DC->prev_mouse_state[1]) {
-		// 		// no money
-		// 		if(price > DC->player->coin) {
-		// 			debug_log("<UI> Not enough money to buy tower %d.\n", on_item);
-		// 			break;
-		// 		}
-		// 		debug_log("<UI> state: change to SELECT\n");
-		// 		state = STATE::SELECT;
-		// 	}
-		// 	break;
-		// } case STATE::SELECT: {
-		// 	// click mouse left button: place
-		// 	if(DC->mouse_state[1] && !DC->prev_mouse_state[1]) {
-		// 		debug_log("<UI> state: change to PLACE\n");
-		// 		state = STATE::PLACE;
-		// 	}
-		// 	// click mouse right button: cancel
-		// 	if(DC->mouse_state[2] && !DC->prev_mouse_state[2]) {
-		// 		on_item = -1;
-		// 		debug_log("<UI> state: change to HALT\n");
-		// 		state = STATE::HALT;
-		// 	}
-		// 	break;
-		// } case STATE::PLACE: {
-		// 	// check placement legality
-		// 	ALLEGRO_BITMAP *bitmap = Tower::get_bitmap(static_cast<TowerType>(on_item));
-		// 	int w = al_get_bitmap_width(bitmap);
-		// 	int h = al_get_bitmap_height(bitmap);
-		// 	Rectangle place_region{mouse.x - w / 2, mouse.y - h / 2, DC->mouse.x + w / 2, DC->mouse.y + h / 2};
-		// 	bool place = true;
-		// 	// tower cannot be placed on the road
-		// 	place &= (!DC->level->is_onroad(place_region));
-		// 	// tower cannot intersect with other towers
-		// 	for(Tower *tower : DC->towers) {
-		// 		place &= (!place_region.overlap(tower->get_region()));
-		// 	}
-		// 	if(!place) {
-		// 		debug_log("<UI> Tower place failed.\n");
-		// 	} else {
-		// 		DC->towers.emplace_back(Tower::create_tower(static_cast<TowerType>(on_item), mouse));
-		// 		DC->player->coin -= std::get<2>(tower_items[on_item]);
-		// 	}
-		// 	debug_log("<UI> state: change to HALT\n");
-		// 	state = STATE::HALT;
-		// 	break;
-		// }
 	}
 }
 
@@ -151,12 +82,15 @@ UI::draw() {
 	const int &game_field_length = DC->game_field_length;
 	const int &player_HP = DC->player->HP;
 	int love_width = al_get_bitmap_width(love);
+	int key_width = al_get_bitmap_width(key);
 	for(int i = 1; i <= player_HP; ++i) {
 		al_draw_bitmap(love, game_field_length - (love_width + love_img_padding) * i, love_img_padding, 0);
 	}
 	if(have_key){
-		int key_width = al_get_bitmap_width(key);
 		al_draw_bitmap(key, game_field_length - (key_width + 5), 30 + al_get_bitmap_height(love), 0);
+	}
+	else{
+		al_draw_bitmap(no_key, game_field_length - (key_width + 5), 30 + al_get_bitmap_height(love), 0);
 	}
 }
 
