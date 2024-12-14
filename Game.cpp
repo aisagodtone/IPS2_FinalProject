@@ -181,7 +181,12 @@ Game::game_update() {
 				background = SC->play(ingame_background_sound_path, ALLEGRO_PLAYMODE_LOOP);
 				BGM_played = true;
 			}
-
+			if(DC->hero->have_key){
+				ui->have_key = true;
+			}
+			else{
+				ui->have_key = false;
+			}
 			if(DC->key_state[ALLEGRO_KEY_P] && !DC->prev_key_state[ALLEGRO_KEY_P]) {
 				SC->toggle_playing(background);
 				debug_log("<Game> state: change to PAUSE\n");

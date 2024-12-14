@@ -25,6 +25,7 @@ public:
 	void init(std::pair<size_t, size_t>);
 	void update();
 	void draw();
+	bool have_key;
 
 protected:
 	/**
@@ -62,8 +63,8 @@ protected:
 
 private:
 	HeroState state = HeroState::FRONT;
-	double speed = 2;
-	double run_speed = 10;
+	double speed = 2.0;
+	double run_speed = 10.0;
 	int hero_posX, hero_posY;
 	std::map< HeroState, std::string> gifPath;
 };

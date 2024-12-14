@@ -103,8 +103,10 @@ Level::draw() {
 		- N for NPC initial position
 		- B for box(chest)
 		- O for opened chest
+		- K for key (showed as an normal chest)
 		- C for closet
 		- D for door
+		- @ for opened door
 	*/
 	if(level == -1) return;
 
@@ -116,6 +118,7 @@ Level::draw() {
 					al_draw_bitmap(block, j * 64, i * 64, 0);
 					break;
 				case 'B':
+				case 'K':
 					al_draw_bitmap(chest, j * 64, i * 64, 0);
 					break;
 				case 'C':
@@ -126,6 +129,9 @@ Level::draw() {
 					break;
 				case 'D':
 					al_draw_bitmap(door, j * 64, i * 64, 0);
+					break;
+				case '@':
+					al_draw_bitmap(door_opened, j * 64, i * 64, 0);
 					break;
 				case 'P':
 				case 'N':

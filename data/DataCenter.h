@@ -82,10 +82,6 @@ public:
 	 * @see Level
 	 */
 	Level *level;
-	/**
-	 * @brief Raw list of Monster objects.
-	 * @see Monster
-	 */
 
 	Hero *hero;
 
@@ -99,6 +95,7 @@ public:
 	 * @see Bullet
 	 */
 	std::vector<Bullet*> towerBullets;
+
 private:
 	DataCenter();
 };

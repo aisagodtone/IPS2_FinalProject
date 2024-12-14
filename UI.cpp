@@ -16,8 +16,7 @@
 // fixed settings
 constexpr char love_img_path[] = "./assets/image/love.png";
 constexpr int love_img_padding = 5;
-constexpr int tower_img_left_padding = 30;
-constexpr int tower_img_top_padding = 30;
+constexpr char key_img_path[] = "./assets/image/key.png";
 constexpr char menu_background_img_path[] = "./assets/image/MenuBackground.jpg";
 constexpr char menu_button_img_path[] = "./assets/image/menu_button.png";
 constexpr char menu_bgm_sound_path[] = "./assets/sound/menu_bgm.wav";
@@ -27,31 +26,13 @@ Rectangle start_button_area;
 
 void
 UI::init() {
-	DataCenter *DC = DataCenter::get_instance();
 	ImageCenter *IC = ImageCenter::get_instance();
 	love = IC->get(love_img_path);
+	key = IC->get(key_img_path);
 	menu_background = IC->get(menu_background_img_path);
 	menu_button = IC->get(menu_button_img_path);
-	int tl_x = DC->game_field_length + tower_img_left_padding;
-	int tl_y = tower_img_top_padding;
-	int max_height = 0;
-	// arrange tower shop
-	for(size_t i = 0; i < (size_t)(TowerType::TOWERTYPE_MAX); ++i) {
-		ALLEGRO_BITMAP *bitmap = IC->get(TowerSetting::tower_menu_img_path[i]);
-		int w = al_get_bitmap_width(bitmap);
-		int h = al_get_bitmap_height(bitmap);
-		if(tl_x + w > DC->window_width) {
-			tl_x = DC->game_field_length + tower_img_left_padding;
-			tl_y += max_height + tower_img_top_padding;
-			max_height = 0;
-		}
-		tower_items.emplace_back(bitmap, Point{tl_x, tl_y}, TowerSetting::tower_price[i]);
-		tl_x += w + tower_img_left_padding;
-		max_height = std::max(max_height, h);
-	}
 	debug_log("<UI> state: change to MENU\n");
 	state = STATE::MENU;
-	on_item = -1;
 }
 
 void
@@ -172,6 +153,10 @@ UI::draw() {
 	int love_width = al_get_bitmap_width(love);
 	for(int i = 1; i <= player_HP; ++i) {
 		al_draw_bitmap(love, game_field_length - (love_width + love_img_padding) * i, love_img_padding, 0);
+	}
+	if(have_key){
+		int key_width = al_get_bitmap_width(key);
+		al_draw_bitmap(key, game_field_length - (key_width + 5), 30 + al_get_bitmap_height(love), 0);
 	}
 }
 
