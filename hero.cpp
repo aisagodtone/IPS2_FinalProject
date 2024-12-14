@@ -22,10 +22,10 @@ namespace HeroSetting {
 
 
 
-void Hero::init(){
+void Hero::init(pair<size_t, size_t> pos){
 	int grid = 64;
-	hero_posX = 1;
-	hero_posY = 3;
+	hero_posX = pos.first;
+	hero_posY = pos.second;
 	for(size_t i = 0; i < static_cast<size_t>(HeroState::HEROSTATE_MAX); ++i){
 		char buffer[50];
 		sprintf(
@@ -38,10 +38,10 @@ void Hero::init(){
 	GIFCenter *GIFC = GIFCenter::get_instance();
 	ALGIF_ANIMATION *gif = GIFC->get(gifPath[HeroState::FRONT]);
 	shape.reset(new Rectangle(
-		1 * grid,
-		3 * grid, 
-		1 * grid + gif -> width, 
-		3 * grid + gif -> height
+		hero_posX * grid,	// initial top-left
+		hero_posY * grid, 
+		hero_posX * grid + gif -> width, 	// initial bottom-right
+		hero_posY * grid + gif -> height
 	));
 }
 
@@ -58,7 +58,7 @@ void Hero::update(){
 	DataCenter *DC = DataCenter::get_instance();
 	if(DC->key_state[ALLEGRO_KEY_W]){
 		debug_log("hero in map x:%d y: %d \n",hero_posY  ,hero_posX );
-		if(DC->map[(static_cast<int>(shape->center_y()- speed))/64][hero_posY] == 1){
+		if(DC->map[(static_cast<int>(shape->center_y()- speed))/64][hero_posY] == '1'){
 			return;
 		}
 		shape->update_center_y(shape->center_y()- speed);
@@ -68,7 +68,7 @@ void Hero::update(){
 	}
 	else if(DC->key_state[ALLEGRO_KEY_A]){
 		debug_log("hero in map x:%d y: %d \n",hero_posY  ,hero_posX );
-		if(DC->map[hero_posX][(static_cast<int>(shape->center_x()- speed))/64] == 1){
+		if(DC->map[hero_posX][(static_cast<int>(shape->center_x()- speed))/64] == '1'){
 			return;
 		}
 		shape->update_center_x(shape->center_x()- speed);
@@ -78,7 +78,7 @@ void Hero::update(){
 	}
 	else if(DC->key_state[ALLEGRO_KEY_S]){
 		debug_log("hero in map x:%d y: %d \n",hero_posY  ,hero_posX );
-		if(DC->map[(static_cast<int>(shape->center_y()+ speed))/64][hero_posY] == 1){
+		if(DC->map[(static_cast<int>(shape->center_y()+ speed))/64][hero_posY] == '1'){
 			return;
 		}
 		shape->update_center_y(shape->center_y()+ speed);
@@ -88,7 +88,7 @@ void Hero::update(){
 	}
 	else if(DC->key_state[ALLEGRO_KEY_D]){
 		debug_log("hero in map x:%d y: %d \n",hero_posY  ,hero_posX );
-		if(DC->map[hero_posX][(static_cast<int>(shape->center_x()+ speed))/64] == 1){
+		if(DC->map[hero_posX][(static_cast<int>(shape->center_x()+ speed))/64] == '1'){
 			return;
 		}
 		shape->update_center_x(shape->center_x()+ speed);

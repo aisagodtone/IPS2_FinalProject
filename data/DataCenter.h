@@ -41,7 +41,7 @@ public:
 	 * @see Game::execute()
 	 */
 
-	int map[12][20];
+	char map[12][20];
 
 	bool key_state[ALLEGRO_KEY_MAX];
 	/**

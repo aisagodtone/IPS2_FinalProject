@@ -17,7 +17,7 @@ class Level
 public:
 	Level() {}
 	void init();
-	void load_level(int lvl);
+	std::pair<size_t, size_t> load_level(int lvl);
 	void draw();
 	
 private:

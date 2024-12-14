@@ -8,6 +8,7 @@
 #include "shapes/Rectangle.h"
 #include <array>
 #include<cstdlib>
+#include <utility>
 
 using namespace std;
 
@@ -41,9 +42,11 @@ Level::init() {
  * @see level_path_format
  * @see MonsterType
  */
-void
+pair<size_t, size_t>
 Level::load_level(int lvl) {
 	DataCenter *DC = DataCenter::get_instance();
+	size_t player_x = 0;
+	size_t player_y = 0;
 
 	char buffer[50];
 	sprintf(buffer, LevelSetting::level_path_format, lvl);
@@ -54,12 +57,25 @@ Level::load_level(int lvl) {
 	// read each grid
 	for(int i = 0; i < 12; ++i) {
 		for(int j = 0; j < 20; j++){
-			fscanf(f, "%d", &DC->map[i][j]);
+			fscanf(f, " %c", &DC->map[i][j]);
+			if(DC->map[i][j] == 'P'){
+				player_x = j;
+				player_y = i;
+			}
 		}
 	}
-
 	fclose(f);
+
 	debug_log("<Level> load level %d.\n", lvl);
+	debug_log("map content:\n");
+	for(int i = 0; i < 12; ++i) {
+		for(int j = 0; j < 20; j++){
+			debug_log("%c", DC->map[i][j]);
+		}
+		debug_log("\n");
+	}
+
+	return make_pair(player_x, player_y);
 }
 
 /**
@@ -69,14 +85,40 @@ Level::load_level(int lvl) {
 
 void
 Level::draw() {
+	/*
+	LEVEL file format:
+		- 12 rows, 20 columns
+		- 1 for block, 0 for empty
+		- P for player initial position
+		- N for NPC initial position
+		- B for box
+		- C for closet
+		- D for door
+	*/
 	if(level == -1) return;
 
 	DataCenter *DC = DataCenter::get_instance();
 	// draw block on the map (1 in LEVEL file -> block)
 	for (int i = 0; i < 12; i++) {
 		for (int j = 0; j < 20; j++) {
-			if(DC->map[i][j] == 1){
-				al_draw_bitmap(block, j * 64, i * 64, 0);
+			switch(DC->map[i][j]){
+				case '1':
+					al_draw_bitmap(block, j * 64, i * 64, 0);
+					break;
+				case 'P':
+					break;
+				case 'B':
+					break;
+				case 'C':
+					break;
+				case 'D':
+					break;
+				case 'N':
+					break;
+				case '0':
+					break;
+				default:
+					debug_log("Invalid format in LEVEL file.\n");
 			}
 		}
 	}

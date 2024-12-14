@@ -22,7 +22,7 @@ class Hero : public Object
 {
 
 public:
-	void init();
+	void init(std::pair<size_t, size_t>);
 	void update();
 	void draw();
 

@@ -15,12 +15,15 @@
 #include <allegro5/allegro_acodec.h>
 #include <vector>
 #include <cstring>
+#include <utility>
 
 // fixed settings
 constexpr char game_icon_img_path[] = "./assets/image/game_icon.png";
 constexpr char game_start_sound_path[] = "./assets/sound/growl.wav";
 constexpr char background_img_path[] = "./assets/image/StartBackground.jpg";
 constexpr char background_sound_path[] = "./assets/sound/BackgroundMusic.ogg";
+
+
 
 /**
  * @brief Game entry.
@@ -132,7 +135,6 @@ Game::game_init() {
 	ui->init();
 
 	DC->level->init();
-	DC->hero->init();
 
 	// game start
 	background = IC->get(background_img_path);
@@ -163,7 +165,8 @@ Game::game_update() {
 			static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
 			if(!is_played) {
 				instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
-				DC->level->load_level(1);
+				player_init_pos = DC->level->load_level(1);	// load level() returns player's initial position (x,y)
+				DC->hero->init(player_init_pos);
 				is_played = true;
 			}
 
@@ -239,7 +242,7 @@ Game::game_draw() {
 	// Flush the screen first.
 	if(state != STATE::END && state != STATE::MENU) {
 		al_clear_to_color(al_map_rgb(100, 100, 100));
-		// background
+		// in-game background
 		al_draw_bitmap(background, 0, 0, 0);
 
 		// if(DC->game_field_length < DC->window_width)
