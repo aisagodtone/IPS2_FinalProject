@@ -61,7 +61,8 @@ void Hero::update(){
 		if(DC->map[(static_cast<int>(shape->center_y() - speed))/64][hero_posY] == '1'
 			|| DC->map[(static_cast<int>(shape->center_y() - speed))/64][hero_posY] == 'D'
 			|| DC->map[(static_cast<int>(shape->center_y() - speed))/64][hero_posY] == 'C'
-			|| DC->map[(static_cast<int>(shape->center_y() - speed))/64][hero_posY] == 'B'){
+			|| DC->map[(static_cast<int>(shape->center_y() - speed))/64][hero_posY] == 'B'
+			|| DC->map[(static_cast<int>(shape->center_y() - speed))/64][hero_posY] == 'O'){
 			return;
 		}
 		shape->update_center_y(shape->center_y()- speed);
@@ -74,7 +75,8 @@ void Hero::update(){
 		if(DC->map[hero_posX][(static_cast<int>(shape->center_x()- speed))/64] == '1'
 			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - speed))/64] == 'D'
 			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - speed))/64] == 'C'
-			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - speed))/64] == 'B'){
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - speed))/64] == 'B'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - speed))/64] == 'O'){
 			return;
 		}
 		shape->update_center_x(shape->center_x()- speed);
@@ -87,7 +89,8 @@ void Hero::update(){
 		if(DC->map[(static_cast<int>(shape->center_y()+ speed))/64][hero_posY] == '1'
 			|| DC->map[(static_cast<int>(shape->center_y() + speed))/64][hero_posY] == 'D'
 			|| DC->map[(static_cast<int>(shape->center_y() + speed))/64][hero_posY] == 'C'
-			|| DC->map[(static_cast<int>(shape->center_y() + speed))/64][hero_posY] == 'B'){
+			|| DC->map[(static_cast<int>(shape->center_y() + speed))/64][hero_posY] == 'B'
+			|| DC->map[(static_cast<int>(shape->center_y() + speed))/64][hero_posY] == 'O'){
 			return;
 		}
 		shape->update_center_y(shape->center_y()+ speed);
@@ -100,7 +103,8 @@ void Hero::update(){
 		if(DC->map[hero_posX][(static_cast<int>(shape->center_x() + speed))/64] == '1'
 			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + speed))/64] == 'D'
 			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + speed))/64] == 'C'
-			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + speed))/64] == 'B'){
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + speed))/64] == 'B'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + speed))/64] == 'O'){
 			return;
 		}
 		shape->update_center_x(shape->center_x()+ speed);
