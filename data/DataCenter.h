@@ -6,6 +6,8 @@
 #include <allegro5/keycodes.h>
 #include <allegro5/mouse.h>
 #include "../shapes/Point.h"
+#include "../hero.h"
+#include "../monsters/Monster.h"
 
 class Player;
 class Level;
@@ -41,7 +43,7 @@ public:
 	 * @see Game::execute()
 	 */
 
-	int map[12][20];
+	int map[12][20], height = 12, width = 20;
 
 	bool key_state[ALLEGRO_KEY_MAX];
 	/**
@@ -88,6 +90,8 @@ public:
 	 */
 
 	Hero *hero;
+
+	Monster *monster;
 
 	/**
 	 * @brief Raw list of Tower objects.

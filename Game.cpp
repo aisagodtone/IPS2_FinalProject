@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "Level.h"
 #include "hero.h"
+#include "monsters/Monster.h"
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
@@ -133,6 +134,9 @@ Game::game_init() {
 
 	DC->level->init();
 	DC->hero->init();
+	debug_log("hero init successfully\n");
+	DC->monster->init(7,6, false, true);
+	debug_log("npc init successfully\n");
 
 	// game start
 	background = IC->get(background_img_path);
@@ -218,6 +222,7 @@ Game::game_update() {
 		ui->update();
 		if(state != STATE::START) {
 			DC->hero->update();
+			DC->monster->update();
 			OC->update();
 		}
 	}
@@ -257,6 +262,7 @@ Game::game_draw() {
 		if(state != STATE::START) {
 			DC->level->draw();
 			DC->hero->draw();
+			DC->monster->draw();
 			ui->draw();
 			OC->draw();
 		}
