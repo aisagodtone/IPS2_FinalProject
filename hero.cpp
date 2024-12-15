@@ -27,6 +27,8 @@ namespace HeroSetting {
 }
 
 constexpr char chest_sound_path[] = "./assets/sound/chest_open.wav";
+constexpr char key_sound_path[] = "./assets/sound/get_key.wav";
+constexpr char door_sound_path[] = "./assets/sound/door_open.wav";
 constexpr char mask_img_path[] = "./assets/image/mask.png";
 bool mask = true;
 
@@ -167,6 +169,7 @@ void Hero::update(){
 			|| (hero_posX+1 < 20 && DC->map[hero_posX+1][hero_posY] == 'K')){
 			// chest or key chest at right side
 			if(DC->map[hero_posX+1][hero_posY] == 'K'){
+				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
 				have_key = true;
 				debug_log("Fonud key\n");
 			}
@@ -177,6 +180,7 @@ void Hero::update(){
 			|| (hero_posX-1 >= 0 && DC->map[hero_posX-1][hero_posY] == 'K')){
 			// chest or key chest at left side
 			if(DC->map[hero_posX-1][hero_posY] == 'K'){
+				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
 				have_key = true;
 				debug_log("Fonud key\n");
 			}
@@ -187,6 +191,7 @@ void Hero::update(){
 			|| (hero_posY+1 < 12 && DC->map[hero_posX][hero_posY+1] == 'K')){
 			// chest or key chest at bottom
 			if(DC->map[hero_posX][hero_posY+1] == 'K'){
+				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
 				have_key = true;
 				debug_log("Fonud key\n");
 			}
@@ -197,6 +202,7 @@ void Hero::update(){
 			|| (hero_posY-1 >= 0 && DC->map[hero_posX][hero_posY-1] == 'K')){
 			// chest or key chest at top
 			if(DC->map[hero_posX][hero_posY-1] == 'K'){
+				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
 				have_key = true;
 				debug_log("Fonud key\n");
 			}
@@ -206,24 +212,28 @@ void Hero::update(){
 		else if(have_key){
 			if((hero_posX+1 < 20 && DC->map[hero_posX+1][hero_posY] == 'D')){
 				// door at right side
+				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
 				DC->map[hero_posX+1][hero_posY] = '@';
 				debug_log("key used\n");
 				have_key = false;
 			} 
 			else if((hero_posX-1 >= 0 && DC->map[hero_posX-1][hero_posY] == 'D')){
 				// door at left side
+				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
 				DC->map[hero_posX-1][hero_posY] = '@';
 				debug_log("key used\n");
 				have_key = false;
 			}
 			else if((hero_posY+1 < 12 && DC->map[hero_posX][hero_posY+1] == 'D')){
 				// door at bottom
+				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
 				DC->map[hero_posX][hero_posY+1] = '@';
 				debug_log("key used\n");
 				have_key = false;
 			}
 			else if((hero_posY-1 >= 0 && DC->map[hero_posX][hero_posY-1] == 'D')){
 				// door at top
+				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
 				DC->map[hero_posX][hero_posY-1] = '@';
 				debug_log("key used\n");
 				have_key = false;

@@ -161,20 +161,21 @@ Game::game_update() {
 			break;
 		}
 		case STATE::START: {
-			static bool is_played = false;
-			static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
-			if(!is_played) {
-				instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
+			// static bool is_played = false;
+			// static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
+			// if(!is_played) {
+			// 	instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
 				player_init_pos = DC->level->load_level(1);	// load level() returns player's initial position (x,y)
 				DC->hero->init(player_init_pos);
-				is_played = true;
-			}
+			// 	is_played = true;
+			// }
 
-			if(!SC->is_playing(instance)) {
+			// if(!SC->is_playing(instance)) {
 				debug_log("<Game> state: change to LEVEL\n");
 				state = STATE::LEVEL;
-			}
+			// }
 			break;
+		
 		} case STATE::LEVEL: {
 			static bool BGM_played = false;
 			if(!BGM_played) {
