@@ -26,6 +26,8 @@ constexpr char chest_img_path[] = "./assets/image/chest_close.png";
 constexpr char chest_opened_img_path[] = "./assets/image/chest_opened.png";
 constexpr char door_img_path[] = "./assets/image/door_closed.png";
 constexpr char door_opened_img_path[] = "./assets/image/door_opened.png";
+constexpr char gate1_img_path[] = "./assets/image/gate1_closed.png";
+constexpr char gate2_img_path[] = "./assets/image/gate2_closed.png";
 
 void
 Level::init() {
@@ -40,6 +42,8 @@ Level::init() {
 	chest_opened = IC->get(chest_opened_img_path);
 	door = IC->get(door_img_path);
 	door_opened = IC->get(door_opened_img_path);
+	gate1 = IC->get(gate1_img_path);
+	gate2 = IC->get(gate2_img_path);
 }
 
 /**
@@ -103,10 +107,12 @@ Level::draw() {
 		- N for NPC initial position
 		- B for box(chest)
 		- O for opened chest
-		- K for key (showed as an normal chest)
+		- K for main door key (showed as an normal chest)
 		- C for closet
 		- D for door
-		- @ for opened door
+		- @ for opened main door
+		- X, Y(capital) for gate locks
+		- x, y(lowercase) for keys to open the corresponding gate
 	*/
 	if(level == -1) return;
 
@@ -117,21 +123,30 @@ Level::draw() {
 				case '1':
 					al_draw_bitmap(block, j * 64, i * 64, 0);
 					break;
+				// boxes, keys
 				case 'B':
 				case 'K':
+				case 'x':
+				case 'y':
 					al_draw_bitmap(chest, j * 64, i * 64, 0);
 					break;
-				case 'C':
+				case 'C':	// closet
 					al_draw_bitmap(closet, j * 64, i * 64, 0);
 					break;
-				case 'O':
+				case 'O':	// opened chest
 					al_draw_bitmap(chest_opened, j * 64, i * 64, 0);
 					break;
-				case 'D':
+				case 'D':	// main door
 					al_draw_bitmap(door, j * 64, i * 64, 0);
 					break;
-				case '@':
+				case '@':	// opened main door
 					al_draw_bitmap(door_opened, j * 64, i * 64, 0);
+					break;
+				case 'X':	// gate1
+					al_draw_bitmap(gate1, j * 64, i * 64, 0);
+					break;
+				case 'Y':	// gate2
+					al_draw_bitmap(gate2, j * 64, i * 64, 0);
 					break;
 				case 'P':
 				case 'N':

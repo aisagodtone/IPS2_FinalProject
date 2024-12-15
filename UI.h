@@ -11,7 +11,8 @@ class UI
 public:
 	enum class STATE {
 		MENU,
-		INGAME
+		INGAME,
+		POST_GAME
 		// HALT, // -> HOVER
 		// HOVER, // -> HALT, SELECT
 		// SELECT, // -> HALT, PLACE
@@ -22,18 +23,21 @@ public:
 	void update();
 	void draw();
 	void draw_menu();
+	void draw_post_menu();
 	STATE get_state();
-	bool have_key = false;
+	bool have_key[3] = {false};
+	STATE state;
 
 private:
-	STATE state;
 	ALLEGRO_BITMAP *love;
 	ALLEGRO_BITMAP *key;
+	ALLEGRO_BITMAP *gate_key1;
+	ALLEGRO_BITMAP *gate_key2;
 	ALLEGRO_BITMAP *no_key;
 	ALLEGRO_BITMAP *menu_background;
 	ALLEGRO_BITMAP *menu_button;
 	// tower menu bitmap, (top-left x, top-left y), price
-	std::vector<std::tuple<ALLEGRO_BITMAP*, Point, int>> tower_items;
+	// std::vector<std::tuple<ALLEGRO_BITMAP*, Point, int>> tower_items;
 };
 
 #endif

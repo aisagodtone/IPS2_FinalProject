@@ -28,6 +28,7 @@ private:
 		START, // -> LEVEL
 		LEVEL, // -> PAUSE, END
 		PAUSE, // -> LEVEL
+		POST_GAME,
 		END
 	};
 	STATE state;

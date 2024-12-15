@@ -19,12 +19,13 @@ public:
 	void init();
 	std::pair<size_t, size_t> load_level(int lvl);
 	void draw();
-	
-private:
+
 	/**
 	 * @brief The index of current level.
 	 */
 	int level;
+	
+private:
 	/**
 	 * @brief Number of grid in x-direction.
 	 */
@@ -41,5 +42,7 @@ private:
 	ALLEGRO_BITMAP *chest_opened;
 	ALLEGRO_BITMAP *door;
 	ALLEGRO_BITMAP *door_opened;
+	ALLEGRO_BITMAP *gate1;
+	ALLEGRO_BITMAP *gate2;
 };
 #endif

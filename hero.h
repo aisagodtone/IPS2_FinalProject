@@ -26,7 +26,8 @@ public:
 	void init(std::pair<size_t, size_t>);
 	void update();
 	void draw();
-	bool have_key;
+	bool have_key[3];
+	int cur_lvl;
 
 protected:
 	/**

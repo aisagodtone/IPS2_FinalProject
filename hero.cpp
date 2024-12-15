@@ -41,7 +41,9 @@ void Hero::init(pair<size_t, size_t> pos){
 	int grid = 64;
 	hero_posX = pos.first;
 	hero_posY = pos.second;
-	have_key = false;
+	for(int i = 0; i < 3; i++){
+		have_key[i] = false;
+	}
 	player_mask = IC->get(mask_img_path);
 	for(size_t i = 0; i < static_cast<size_t>(HeroState::HEROSTATE_MAX); ++i){
 		char buffer[50];
@@ -80,6 +82,7 @@ void Hero::draw(){
 void Hero::update(){
 	DataCenter *DC = DataCenter::get_instance();
 	SoundCenter *SC = SoundCenter::get_instance();
+	static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
 
 	// toggle mask
 	if(DC->key_state[ALLEGRO_KEY_BACKSLASH] && !DC->prev_key_state[ALLEGRO_KEY_BACKSLASH]){
@@ -94,7 +97,12 @@ void Hero::update(){
 			|| DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == 'C'
 			|| DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == 'B'
 			|| DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == 'O'
-			|| DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == 'K'){
+			|| DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == 'K'
+			|| DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == 'X'
+			|| DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == 'Y'
+			|| DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == 'x'
+			|| DC->map[(static_cast<int>(shape->center_y() - run_speed))/64][hero_posY] == 'y'
+			){
 			return;
 		}
 		if(DC->key_state[ALLEGRO_KEY_LSHIFT]){
@@ -114,7 +122,12 @@ void Hero::update(){
 			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - run_speed))/64] == 'C'
 			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - run_speed))/64] == 'B'
 			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - run_speed))/64] == 'O'
-			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - run_speed))/64] == 'K'){
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - run_speed))/64] == 'K'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - run_speed))/64] == 'X'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - run_speed))/64] == 'Y'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - run_speed))/64] == 'x'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() - run_speed))/64] == 'y'
+			){
 			return;
 		}
 		if(DC->key_state[ALLEGRO_KEY_LSHIFT]){
@@ -134,7 +147,12 @@ void Hero::update(){
 			|| DC->map[(static_cast<int>(shape->center_y() + run_speed))/64][hero_posY] == 'C'
 			|| DC->map[(static_cast<int>(shape->center_y() + run_speed))/64][hero_posY] == 'B'
 			|| DC->map[(static_cast<int>(shape->center_y() + run_speed))/64][hero_posY] == 'O'
-			|| DC->map[(static_cast<int>(shape->center_y() + run_speed))/64][hero_posY] == 'K'){
+			|| DC->map[(static_cast<int>(shape->center_y() + run_speed))/64][hero_posY] == 'K'
+			|| DC->map[(static_cast<int>(shape->center_y() + run_speed))/64][hero_posY] == 'X'
+			|| DC->map[(static_cast<int>(shape->center_y() + run_speed))/64][hero_posY] == 'Y'
+			|| DC->map[(static_cast<int>(shape->center_y() + run_speed))/64][hero_posY] == 'x'
+			|| DC->map[(static_cast<int>(shape->center_y() + run_speed))/64][hero_posY] == 'y'
+			){
 			return;
 		}
 		if(DC->key_state[ALLEGRO_KEY_LSHIFT]){
@@ -154,7 +172,12 @@ void Hero::update(){
 			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == 'C'
 			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == 'B'
 			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == 'O'
-			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == 'K'){
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == 'K'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == 'X'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == 'Y'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == 'x'
+			|| DC->map[hero_posX][(static_cast<int>(shape->center_x() + run_speed))/64] == 'y'
+			){
 			return;
 		}
 		if(DC->key_state[ALLEGRO_KEY_LSHIFT]){
@@ -172,44 +195,92 @@ void Hero::update(){
 	else if(DC->key_state[ALLEGRO_KEY_ENTER] && !DC->prev_key_state[ALLEGRO_KEY_ENTER]){
 		debug_log("Enter pressed\n");
 		if((hero_posX+1 < 20 && DC->map[hero_posX+1][hero_posY] == 'B')
-			|| (hero_posX+1 < 20 && DC->map[hero_posX+1][hero_posY] == 'K')){
+			|| (hero_posX+1 < 20 && DC->map[hero_posX+1][hero_posY] == 'K')
+			|| (hero_posX+1 < 20 && DC->map[hero_posX+1][hero_posY] == 'x')
+			|| (hero_posX+1 < 20 && DC->map[hero_posX+1][hero_posY] == 'y')){
 			// chest or key chest at right side
 			if(DC->map[hero_posX+1][hero_posY] == 'K'){
 				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
-				have_key = true;
-				debug_log("Fonud key\n");
+				have_key[0] = true;
+				debug_log("Fonud main key\n");
+			}
+			else if(DC->map[hero_posX+1][hero_posY] == 'x'){
+				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				have_key[1] = true;
+				debug_log("Fonud gate1 key\n");
+			}
+			else if(DC->map[hero_posX+1][hero_posY] == 'y'){
+				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				have_key[2] = true;
+				debug_log("Fonud gate2 key\n");
 			}
 			SC->play(chest_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			DC->map[hero_posX+1][hero_posY] = 'O';
 		} 
 		else if((hero_posX-1 >= 0 && DC->map[hero_posX-1][hero_posY] == 'B')
-			|| (hero_posX-1 >= 0 && DC->map[hero_posX-1][hero_posY] == 'K')){
+			|| (hero_posX-1 >= 0 && DC->map[hero_posX-1][hero_posY] == 'K')
+			|| (hero_posX-1 >= 0 && DC->map[hero_posX-1][hero_posY] == 'x')
+			|| (hero_posX-1 >= 0 && DC->map[hero_posX-1][hero_posY] == 'y')){
 			// chest or key chest at left side
 			if(DC->map[hero_posX-1][hero_posY] == 'K'){
 				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
-				have_key = true;
+				have_key[0] = true;
+				debug_log("Fonud key\n");
+			}
+			else if(DC->map[hero_posX-1][hero_posY] == 'x'){
+				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				have_key[1] = true;
+				debug_log("Fonud key\n");
+			}
+			else if(DC->map[hero_posX-1][hero_posY] == 'y'){
+				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				have_key[2] = true;
 				debug_log("Fonud key\n");
 			}
 			SC->play(chest_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			DC->map[hero_posX-1][hero_posY] = 'O';
 		}
 		else if((hero_posY+1 < 12 && DC->map[hero_posX][hero_posY+1] == 'B')
-			|| (hero_posY+1 < 12 && DC->map[hero_posX][hero_posY+1] == 'K')){
+			|| (hero_posY+1 < 12 && DC->map[hero_posX][hero_posY+1] == 'K')
+			|| (hero_posY+1 < 12 && DC->map[hero_posX][hero_posY+1] == 'x')
+			|| (hero_posY+1 < 12 && DC->map[hero_posX][hero_posY+1] == 'y')){
 			// chest or key chest at bottom
 			if(DC->map[hero_posX][hero_posY+1] == 'K'){
 				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
-				have_key = true;
+				have_key[0] = true;
+				debug_log("Fonud key\n");
+			}
+			else if(DC->map[hero_posX][hero_posY+1] == 'x'){
+				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				have_key[1] = true;
+				debug_log("Fonud key\n");
+			}
+			else if(DC->map[hero_posX][hero_posY+1] == 'y'){
+				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				have_key[2] = true;
 				debug_log("Fonud key\n");
 			}
 			SC->play(chest_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			DC->map[hero_posX][hero_posY+1] = 'O';
 		}
 		else if((hero_posY-1 >= 0 && DC->map[hero_posX][hero_posY-1] == 'B')
-			|| (hero_posY-1 >= 0 && DC->map[hero_posX][hero_posY-1] == 'K')){
+			|| (hero_posY-1 >= 0 && DC->map[hero_posX][hero_posY-1] == 'K')
+			|| (hero_posY-1 >= 0 && DC->map[hero_posX][hero_posY-1] == 'x')
+			|| (hero_posY-1 >= 0 && DC->map[hero_posX][hero_posY-1] == 'y')){
 			// chest or key chest at top
 			if(DC->map[hero_posX][hero_posY-1] == 'K'){
 				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
-				have_key = true;
+				have_key[0] = true;
+				debug_log("Fonud key\n");
+			}
+			else if(DC->map[hero_posX][hero_posY-1] == 'x'){
+				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				have_key[1] = true;
+				debug_log("Fonud key\n");
+			}
+			else if(DC->map[hero_posX][hero_posY-1] == 'y'){
+				SC->play(key_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				have_key[2] = true;
 				debug_log("Fonud key\n");
 			}
 			SC->play(chest_sound_path, ALLEGRO_PLAYMODE_ONCE);
@@ -217,49 +288,110 @@ void Hero::update(){
 		}
 
 		// press ENTER next to a door
-		else if((hero_posX+1 < 20 && DC->map[hero_posX+1][hero_posY] == 'D')){
+		else if( (hero_posX+1 < 20 && DC->map[hero_posX+1][hero_posY] == 'D')
+			|| (hero_posX+1 < 20 && DC->map[hero_posX+1][hero_posY] == 'X')
+			|| (hero_posX+1 < 20 && DC->map[hero_posX+1][hero_posY] == 'Y') 
+			){
 			// door at right side
-			if(have_key){
+			if(have_key[0] && DC->map[hero_posX+1][hero_posY] == 'D'){
 				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
 				DC->map[hero_posX + 1][hero_posY] = '@';
-				debug_log("key used\n");
-				have_key = false;
+				debug_log("main key used\n");
+				have_key[0] = false;
+				cur_lvl++;
+			}
+			else if(have_key[1] && DC->map[hero_posX+1][hero_posY] == 'X'){
+				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				DC->map[hero_posX + 1][hero_posY] = '0';
+				debug_log("gate1 key used\n");
+				have_key[1] = false;
+			}
+			else if(have_key[2] && DC->map[hero_posX+1][hero_posY] == 'Y'){
+				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				DC->map[hero_posX + 1][hero_posY] = '0';
+				debug_log("gate2 key used\n");
+				have_key[2] = false;
 			}
 			else{
 				SC->play(door_locked_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			}
 		}
-		else if((hero_posX-1 >= 0 && DC->map[hero_posX-1][hero_posY] == 'D')){
+		else if((hero_posX-1 >= 0 && DC->map[hero_posX-1][hero_posY] == 'D')
+			|| (hero_posX-1 >= 0 && DC->map[hero_posX-1][hero_posY] == 'X')
+			|| (hero_posX-1 >= 0 && DC->map[hero_posX-1][hero_posY] == 'Y')){
 			// door at left side
-			if(have_key){
+			if(have_key[0] && DC->map[hero_posX-1][hero_posY] == 'D'){
 				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
 				DC->map[hero_posX - 1][hero_posY] = '@';
 				debug_log("key used\n");
-				have_key = false;
+				have_key[0] = false;
+				cur_lvl++;
+			}
+			else if(have_key[1] && DC->map[hero_posX-1][hero_posY] == 'X'){
+				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				DC->map[hero_posX - 1][hero_posY] = '0';
+				debug_log("gate1 key used\n");
+				have_key[1] = false;
+			}
+			else if(have_key[2] && DC->map[hero_posX-1][hero_posY] == 'Y'){
+				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				DC->map[hero_posX - 1][hero_posY] = '0';
+				debug_log("gate2 key used\n");
+				have_key[2] = false;
 			}
 			else{
 				SC->play(door_locked_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			}
 		}
-		else if((hero_posY+1 < 12 && DC->map[hero_posX][hero_posY+1] == 'D')){
+		else if((hero_posY+1 < 12 && DC->map[hero_posX][hero_posY+1] == 'D')
+			|| (hero_posY+1 < 12 && DC->map[hero_posX][hero_posY+1] == 'X')
+			|| (hero_posY+1 < 12 && DC->map[hero_posX][hero_posY+1] == 'Y')){
 			// door at bottom
-			if(have_key){
+			if(have_key[0] && DC->map[hero_posX][hero_posY + 1] == 'D'){
 				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
 				DC->map[hero_posX][hero_posY + 1] = '@';
 				debug_log("key used\n");
-				have_key = false;
+				have_key[0] = false;
+				cur_lvl++;
+			}
+			else if(have_key[1] && DC->map[hero_posX][hero_posY + 1] == 'X'){
+				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				DC->map[hero_posX][hero_posY + 1] = '0';
+				debug_log("gate1 key used\n");
+				have_key[1] = false;
+			}
+			else if(have_key[2] && DC->map[hero_posX][hero_posY + 1] == 'Y'){
+				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				DC->map[hero_posX][hero_posY + 1] = '0';
+				debug_log("gate2 key used\n");
+				have_key[2] = false;
 			}
 			else{
 				SC->play(door_locked_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			}
 		}
-		else if((hero_posY-1 >= 0 && DC->map[hero_posX][hero_posY-1] == 'D')){
-			if(have_key){
+		else if((hero_posY-1 >= 0 && DC->map[hero_posX][hero_posY-1] == 'D')
+			|| (hero_posY-1 >= 0 && DC->map[hero_posX][hero_posY-1] == 'X')
+			|| (hero_posY-1 >= 0 && DC->map[hero_posX][hero_posY-1] == 'Y')){
+			if(have_key[0] && DC->map[hero_posX][hero_posY - 1] == 'D'){
 				// door at top
 				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
 				DC->map[hero_posX][hero_posY - 1] = '@';
 				debug_log("key used\n");
-				have_key = false;
+				have_key[0] = false;
+				cur_lvl++;
+			}
+			else if(have_key[1] && DC->map[hero_posX][hero_posY - 1] == 'X'){
+				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				DC->map[hero_posX][hero_posY - 1] = '0';
+				debug_log("gate1 key used\n");
+				have_key[1] = false;
+			}
+			else if(have_key[2] && DC->map[hero_posX][hero_posY - 1] == 'Y'){
+				SC->play(door_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				DC->map[hero_posX][hero_posY - 1] = '0';
+				debug_log("gate2 key used\n");
+				have_key[2] = false;
 			}
 			else{
 				SC->play(door_locked_sound_path, ALLEGRO_PLAYMODE_ONCE);
@@ -272,7 +404,6 @@ void Hero::update(){
 			|| (hero_posY+1 < 12 && DC->map[hero_posX][hero_posY+1] == 'C') 
 			|| (hero_posY-1 >= 0 && DC->map[hero_posX][hero_posY-1] == 'C')
 			){
-			static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
 			if(!in_closet){
 				instance = SC->play(closet_open_sound_path, ALLEGRO_PLAYMODE_ONCE);
 			}

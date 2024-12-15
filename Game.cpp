@@ -155,22 +155,35 @@ Game::game_update() {
 	OperationCenter *OC = OperationCenter::get_instance();
 	SoundCenter *SC = SoundCenter::get_instance();
 	static ALLEGRO_SAMPLE_INSTANCE *background = nullptr;
+	static int lvl = 1;
 
 	switch(state) {
 		case STATE::MENU: {
 			break;
 		}
 		case STATE::START: {
+			if(lvl > 2){
+				state = STATE::POST_GAME;
+				ui->state = UI::STATE::POST_GAME;
+			}
 			// static bool is_played = false;
 			// static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
 			// if(!is_played) {
 			// 	instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
-				player_init_pos = DC->level->load_level(1);	// load level() returns player's initial position (x,y)
+			 	if(lvl == 1) {
+					DC->player->max_key = 1;
+				}
+				else if(lvl == 2) {
+					DC->player->max_key = 3;
+				}
+				player_init_pos = DC->level->load_level(lvl);	// load level() returns player's initial position (x,y)
 				DC->hero->init(player_init_pos);
+				DC->hero->cur_lvl = lvl;
 			// 	is_played = true;
 			// }
 
 			// if(!SC->is_playing(instance)) {
+				lvl++;
 				debug_log("<Game> state: change to LEVEL\n");
 				state = STATE::LEVEL;
 			// }
@@ -182,11 +195,13 @@ Game::game_update() {
 				background = SC->play(ingame_background_sound_path, ALLEGRO_PLAYMODE_LOOP);
 				BGM_played = true;
 			}
-			if(DC->hero->have_key){
-				ui->have_key = true;
-			}
-			else{
-				ui->have_key = false;
+			for(int i = 0; i < 3; i++){
+				if(DC->hero->have_key[i]){
+					ui->have_key[i] = true;
+				}
+				else{
+					ui->have_key[i] = false;
+				}
 			}
 			if(DC->key_state[ALLEGRO_KEY_P] && !DC->prev_key_state[ALLEGRO_KEY_P]) {
 				SC->toggle_playing(background);
@@ -199,7 +214,7 @@ Game::game_update() {
 			}*/
 			if(DC->player->HP == 0) {
 				debug_log("<Game> state: change to END\n");
-				state = STATE::END;
+				state = STATE::POST_GAME;
 			}
 			break;
 		} case STATE::PAUSE: {
@@ -209,9 +224,16 @@ Game::game_update() {
 				state = STATE::LEVEL;
 			}
 			break;
+		}case STATE::POST_GAME: {
+			break;
 		} case STATE::END: {
 			return false;
 		}
+	}
+	if(state == STATE::LEVEL && DC->hero->cur_lvl > 2) {
+		debug_log("<Game> state: change to POST_GAME\n");
+		state = STATE::POST_GAME;
+		ui->state = UI::STATE::POST_GAME;
 	}
 	if(state == STATE::MENU) {
 		ui->update();	// load menu
@@ -220,14 +242,26 @@ Game::game_update() {
 			state = STATE::START;
 		}
 	}
+	else if(state == STATE::POST_GAME) {
+		ui->update();
+		if(ui->get_state() == UI::STATE::MENU) {
+			debug_log("<Game> state: change to MENU\n");
+			state = STATE::MENU;
+			lvl = 1;
+		}
+	}
 	// If the game is not paused, we should progress update.
-	else if(state != STATE::PAUSE) {
+	else if(state != STATE::PAUSE && state != STATE::END) {
 		DC->player->update();
 		SC->update();
 		ui->update();
 		if(state != STATE::START) {
 			DC->hero->update();
 			OC->update();
+		}
+		if(DC->hero->cur_lvl != DC->level->level && DC->hero->cur_lvl < 3) {
+			debug_log("<Game> state: change to START\n");
+			state = STATE::START;
 		}
 	}
 	// game_update is finished. The states of current frame will be previous states of the next frame.
@@ -245,7 +279,7 @@ Game::game_draw() {
 	FontCenter *FC = FontCenter::get_instance();
 
 	// Flush the screen first.
-	if(state != STATE::END && state != STATE::MENU) {
+	if(state != STATE::END && state != STATE::MENU && state != STATE::POST_GAME) {
 		al_clear_to_color(al_map_rgb(100, 100, 100));
 		// in-game background
 		al_draw_bitmap(background, 0, 0, 0);
@@ -258,7 +292,8 @@ Game::game_draw() {
 		al_flip_display();
 	}
 	switch(state) {
-		case STATE::MENU:{
+		case STATE::POST_GAME:{
+		}case STATE::MENU:{
 		}case STATE::START: {
 		} case STATE::LEVEL: {
 			break;
