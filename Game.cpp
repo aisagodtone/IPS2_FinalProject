@@ -241,7 +241,6 @@ Game::game_update() {
 void
 Game::game_draw() {
 	DataCenter *DC = DataCenter::get_instance();
-	OperationCenter *OC = OperationCenter::get_instance();
 	FontCenter *FC = FontCenter::get_instance();
 
 	// Flush the screen first.
@@ -249,25 +248,13 @@ Game::game_draw() {
 		al_clear_to_color(al_map_rgb(100, 100, 100));
 		// in-game background
 		al_draw_bitmap(background, 0, 0, 0);
-
-		// if(DC->game_field_length < DC->window_width)
-		// 	al_draw_filled_rectangle(
-		// 		DC->game_field_length, 0,
-		// 		DC->window_width, DC->window_height,
-		// 		al_map_rgb(100, 100, 100));
-		// if(DC->game_field_length < DC->window_height)
-		// 	al_draw_filled_rectangle(
-		// 		0, DC->game_field_length,
-		// 		DC->window_width, DC->window_height,
-		// 		al_map_rgb(100, 100, 100));
-
 		// user interface
 		if(state != STATE::START) {
 			DC->level->draw();
 			DC->hero->draw();
 			ui->draw();
-			OC->draw();
 		}
+		al_flip_display();
 	}
 	switch(state) {
 		case STATE::MENU:{

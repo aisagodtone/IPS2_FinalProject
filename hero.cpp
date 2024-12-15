@@ -5,6 +5,11 @@
 #include "shapes/Rectangle.h"
 #include "Utils.h"
 #include "data/SoundCenter.h"
+#include <allegro5/allegro_primitives.h>
+#include "data/ImageCenter.h"
+
+#define MASK_SHIFT_X 1280
+#define MASK_SHIFT_Y 768
 
 using namespace std;
 
@@ -22,12 +27,16 @@ namespace HeroSetting {
 }
 
 constexpr char chest_sound_path[] = "./assets/sound/chest_open.wav";
+constexpr char mask_img_path[] = "./assets/image/mask.png";
+bool mask = true;
 
 void Hero::init(pair<size_t, size_t> pos){
+	ImageCenter *IC = ImageCenter::get_instance();
 	int grid = 64;
 	hero_posX = pos.first;
 	hero_posY = pos.second;
 	have_key = false;
+	player_mask = IC->get(mask_img_path);
 	for(size_t i = 0; i < static_cast<size_t>(HeroState::HEROSTATE_MAX); ++i){
 		char buffer[50];
 		sprintf(
@@ -50,15 +59,26 @@ void Hero::init(pair<size_t, size_t> pos){
 void Hero::draw(){
 	GIFCenter *GIFC = GIFCenter::get_instance();
 	ALGIF_ANIMATION *gif = GIFC->get(gifPath[state]);
+
 	algif_draw_gif(
 		gif,
 		shape->center_x() - gif->width / 2,
 		shape->center_y() - gif->height / 2, 0);
+	if(mask){
+		// draw mask
+		al_draw_bitmap(player_mask, shape->center_x() - MASK_SHIFT_X, shape->center_y() - MASK_SHIFT_Y, 0);
+	}
 }
 
 void Hero::update(){
 	DataCenter *DC = DataCenter::get_instance();
 	SoundCenter *SC = SoundCenter::get_instance();
+
+	// toggle mask
+	if(DC->key_state[ALLEGRO_KEY_BACKSLASH] && !DC->prev_key_state[ALLEGRO_KEY_BACKSLASH]){
+		mask = !mask;
+	}
+
 	// WASD movements, LSHIFT for running, and blocking objects handling
 	if(DC->key_state[ALLEGRO_KEY_W]){
 		debug_log("Player in map x:%d y: %d \n",hero_posY  ,hero_posX );
@@ -141,7 +161,7 @@ void Hero::update(){
 		state = HeroState::RIGHT;
 	}
 	// press ENTER next to a chest/closet/door to open it
-	else if(DC->key_state[ALLEGRO_KEY_ENTER]){
+	else if(DC->key_state[ALLEGRO_KEY_ENTER] && !DC->prev_key_state[ALLEGRO_KEY_ENTER]){
 		debug_log("Enter pressed\n");
 		if((hero_posX+1 < 20 && DC->map[hero_posX+1][hero_posY] == 'B')
 			|| (hero_posX+1 < 20 && DC->map[hero_posX+1][hero_posY] == 'K')){
