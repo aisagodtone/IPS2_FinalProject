@@ -33,7 +33,7 @@ public:
 	//static Monster *create_monster(MonsterType type, const std::vector<Point> &path);
 public:
 	//Monster(const std::vector<Point> &path, MonsterType type);
-	void init(int x, int y, bool hPatrol,bool fPatrol); // NPC's init_x, init_y on map[][]
+	void init(int x, int y, bool hPatrol,bool fPatrol, bool pdir); // NPC's init_x, init_y on map[][]
 	void update();
 	void draw();
 	void patrol();
@@ -94,6 +94,7 @@ private:
 	int patrol_line;           // 巡邏行或列（取決於方向）
     bool horizontal_patrol;    // 是否為橫向巡邏（true 為橫向，false 為縱向）
     bool patrol_forward;       // 當前巡邏方向（true 為正向，false 為反向）
+	bool patrol_dir;
 	int detection_radius;    // 警戒范围
    // int chase_radius;        // 追击范围
 	int init_x, init_y;

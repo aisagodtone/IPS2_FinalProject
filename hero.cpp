@@ -33,8 +33,6 @@ constexpr char door_locked_sound_path[] = "./assets/sound/door_locked.wav";
 constexpr char closet_open_sound_path[] = "./assets/sound/closet_open.mp3";
 constexpr char closet_close_sound_path[] = "./assets/sound/closet_close.mp3";
 constexpr char mask_img_path[] = "./assets/image/mask.png";
-bool mask = true;
-bool in_closet = false;
 
 void Hero::init(pair<size_t, size_t> pos){
 	ImageCenter *IC = ImageCenter::get_instance();

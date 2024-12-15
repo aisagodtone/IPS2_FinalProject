@@ -136,8 +136,8 @@ Game::game_init() {
 	ui->init();
 
 	DC->level->init();
-	DC->monsters[0]->init(10,3,true, false);
-	DC->monsters[1]->init(10,2,true, false);
+	DC->monsters[0]->init(10,3,true, false, true);
+	DC->monsters[1]->init(10,2,true, false, false);
 	// game start
 	background = IC->get(background_img_path);
 	debug_log("Game state: change to MENU\n");

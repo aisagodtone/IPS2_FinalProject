@@ -30,11 +30,12 @@ namespace MonsterSetting {
 	};
 }
 
-void Monster::init(int x, int y, bool hPatrol,bool fPatrol){
+void Monster::init(int x, int y, bool hPatrol,bool fPatrol, bool dir){
 	speed = 2;
 	init_x = x, init_y = y;
 	horizontal_patrol = hPatrol;
 	patrol_forward = fPatrol;
+	patrol_dir = dir;
     state = MonsterState::PATROL;
 	int grid = 64;
     detection_radius = 128; 
@@ -79,23 +80,36 @@ void Monster::patrol() {
     int dx = 0, dy = 0;
 
     if (horizontal_patrol) {
-        dx = patrol_forward ? 1 : -1;
-    } else {
-        dy = patrol_forward ? 1 : -1;
+		if(patrol_dir)
+        	dx = patrol_forward ? 1 : -1;
+		else
+			dx = patrol_forward ? -1 : 1;
+    } 
+	else {
+        if(patrol_dir)
+        	dy = patrol_forward ? 1 : -1;
+		else
+			dy = patrol_forward ? -1 : 1;
     }
 
     // 計算下一個位置
-    int next_x = (static_cast<int>(hitbox_x + dx)) / 64 ;
-    int next_y = (static_cast<int>(hitbox_y + dy)) / 64 ;
+    int next_x = (static_cast<int>(hitbox_x / 64) + dx);
+    int next_y = (static_cast<int>(hitbox_y / 64) + dy)  ;
 
     // 判斷是否碰到牆壁
     if (DC->map[next_y][next_x] != '0') {
         patrol_forward = !patrol_forward; // 遇到牆壁時反向
         // 更新方向
         if (horizontal_patrol) {
-            dir = patrol_forward ? MDir::RIGHT : MDir::LEFT;
+			if(patrol_dir)
+            	dir = patrol_forward ? MDir::RIGHT : MDir::LEFT;
+			else
+				dir = patrol_forward ? MDir::LEFT : MDir::RIGHT;
         } else {
-            dir = patrol_forward ? MDir::FRONT : MDir::BACK;
+			if(patrol_dir)
+            	dir = patrol_forward ? MDir::FRONT : MDir::BACK;
+			else
+				dir = patrol_forward ? MDir::BACK : MDir::FRONT;
         }
     } else {
         // 更新位置
