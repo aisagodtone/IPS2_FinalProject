@@ -4,14 +4,23 @@
 #include "../Object.h"
 #include "../shapes/Rectangle.h"
 #include "../shapes/Point.h"
+#include <allegro5/allegro.h>
 #include <vector>
 #include <queue>
+#include <map>
+#include <string>
 
-enum class Dir;
+enum class MDir{
+	LEFT,
+	RIGHT,
+	FRONT,
+	BACK,
+	NPCDIR_MAX
+};
 
 // fixed settings
-enum class MonsterType {
-	WOLF, CAVEMAN, WOLFKNIGHT, DEMONNIJIA, MONSTERTYPE_MAX
+enum class MonsterState {
+	PATROL, ALERT, HUNT
 };
 
 /**
@@ -21,14 +30,24 @@ enum class MonsterType {
 class Monster : public Object
 {
 public:
-	static Monster *create_monster(MonsterType type, const std::vector<Point> &path);
+	//static Monster *create_monster(MonsterType type, const std::vector<Point> &path);
 public:
-	Monster(const std::vector<Point> &path, MonsterType type);
+	//Monster(const std::vector<Point> &path, MonsterType type);
+	void init(int x, int y, bool hPatrol,bool fPatrol, bool pdir); // NPC's init_x, init_y on map[][]
 	void update();
 	void draw();
-	const int &get_money() const { return money; }
-	int HP;
-	const std::queue<Point> &get_path() const { return path; }
+	void patrol();
+	//void hunt(double x, double y);
+	//void alert(double x, double y);
+	double dir_to_angle(MDir direction);
+	bool is_in_fov(const Point &player_pos);
+	bool is_visible(const Point &player_pos);
+	//void find_path(const Point &monster_pos,const Point &player_pos); 
+	//~Monster();
+
+	//const int &get_money() const { return money; }
+	//int HP;
+	//const std::queue<Point> &get_path() const { return path; }
 protected:
 	/**
 	 * @var HP
@@ -62,16 +81,29 @@ protected:
 	 * @brief The walk path of a monster, represented in grid format.
 	 * @see Level::grid_to_region(const Point &grid) const
 	*/
-	int v;
-	int money;
-	std::vector<std::vector<int>> bitmap_img_ids;
-	int bitmap_switch_counter;
-	int bitmap_switch_freq;
-	int bitmap_img_id;
+	//int money;
+	//std::vector<std::vector<int>> bitmap_img_ids;
+	//int bitmap_switch_counter;
+	//int bitmap_switch_freq;
+	//int bitmap_img_id;
 private:
-	MonsterType type;
-	Dir dir;
-	std::queue<Point> path;
+  	//ALLEGRO_TIMER *alert_timer;
+	MonsterState state;
+	int speed;
+	MDir dir;
+	int patrol_line;           // 巡邏行或列（取決於方向）
+    bool horizontal_patrol;    // 是否為橫向巡邏（true 為橫向，false 為縱向）
+    bool patrol_forward;       // 當前巡邏方向（true 為正向，false 為反向）
+	bool patrol_dir;
+	int detection_radius;    // 警戒范围
+   // int chase_radius;        // 追击范围
+	int init_x, init_y;
+	double hitbox_x, hitbox_y;
+	double M_PI;
+	
+	std::map<MDir, std::string> gifPath;
+	//std::queue<Point> path;
+
 };
 
 #endif

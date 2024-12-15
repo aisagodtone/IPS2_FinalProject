@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "Level.h"
 #include "hero.h"
+#include "monsters/Monster.h"
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
@@ -135,7 +136,8 @@ Game::game_init() {
 	ui->init();
 
 	DC->level->init();
-
+	DC->monsters[0]->init(10,3,true, false, true);
+	DC->monsters[1]->init(10,2,true, false, false);
 	// game start
 	background = IC->get(background_img_path);
 	debug_log("Game state: change to MENU\n");
@@ -216,6 +218,14 @@ Game::game_update() {
 				debug_log("<Game> state: change to END\n");
 				state = STATE::POST_GAME;
 			}
+
+			for(auto &mon : DC->monsters){
+				if(mon->is_visible({DC->hero->shape->center_x(),DC->hero->shape->center_y()}) && mon->is_in_fov({DC->hero->shape->center_x(),DC->hero->shape->center_y()}))
+				{
+					debug_log("Player is found\n");
+				}
+			}
+
 			break;
 		} case STATE::PAUSE: {
 			if(DC->key_state[ALLEGRO_KEY_P] && !DC->prev_key_state[ALLEGRO_KEY_P]) {
@@ -257,6 +267,8 @@ Game::game_update() {
 		ui->update();
 		if(state != STATE::START) {
 			DC->hero->update();
+			DC->monsters[0]->update();
+			DC->monsters[1]->update();
 			OC->update();
 		}
 		if(DC->hero->cur_lvl != DC->level->level && DC->hero->cur_lvl < 3) {
@@ -286,8 +298,11 @@ Game::game_draw() {
 		// user interface
 		if(state != STATE::START) {
 			DC->level->draw();
+			DC->monsters[0]->draw();
+			DC->monsters[1]->draw();
 			DC->hero->draw();
 			ui->draw();
+			// OC->draw();
 		}
 		al_flip_display();
 	}

@@ -5,6 +5,7 @@
 #include "../towers/Tower.h"
 #include "../towers/Bullet.h"
 #include "../hero.h"
+#include "../monsters/Monster.h"
 
 // fixed settings
 namespace DataSetting {
@@ -27,7 +28,9 @@ DataCenter::DataCenter() {
 	player = new Player();
 	level = new Level();
 	hero = new Hero();
-
+	for(int i = 0; i < 2; i++){
+		monsters.push_back(new Monster());
+	}
 }
 
 DataCenter::~DataCenter() {
@@ -35,10 +38,14 @@ DataCenter::~DataCenter() {
 	delete level;
 	delete hero;
 
-	for(Tower *&t : towers) {
+	for(Monster *&m : monsters){
+		delete m;
+	}
+
+	/*for(Tower *&t : towers) {
 		delete t;
 	}
 	for(Bullet *&b : towerBullets) {
 		delete b;
-	}
+	}*/
 }
