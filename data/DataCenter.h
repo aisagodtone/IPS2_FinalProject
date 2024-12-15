@@ -6,15 +6,13 @@
 #include <allegro5/keycodes.h>
 #include <allegro5/mouse.h>
 #include "../shapes/Point.h"
-#include "../hero.h"
-#include "../monsters/Monster.h"
 
 class Player;
 class Level;
 class Tower;
 class Bullet;
 class Hero;
-
+class Monster;
 /**
  * @brief Stores generic global data and relatively small data structures.
  * @details The globally used data such as FPS (frames per second), windows size, game region, and states of input devices (mouse and keyboard).
@@ -43,7 +41,7 @@ public:
 	 * @see Game::execute()
 	 */
 
-	int map[12][20], height = 12, width = 20;
+	char map[12][20];
 
 	bool key_state[ALLEGRO_KEY_MAX];
 	/**
@@ -84,14 +82,10 @@ public:
 	 * @see Level
 	 */
 	Level *level;
-	/**
-	 * @brief Raw list of Monster objects.
-	 * @see Monster
-	 */
 
 	Hero *hero;
 
-	Monster *monster;
+	std::vector<Monster *> monsters;
 
 	/**
 	 * @brief Raw list of Tower objects.
@@ -103,6 +97,7 @@ public:
 	 * @see Bullet
 	 */
 	std::vector<Bullet*> towerBullets;
+
 private:
 	DataCenter();
 };

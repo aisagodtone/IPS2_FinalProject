@@ -23,15 +23,17 @@ public:
 	void draw();
 	void draw_menu();
 	STATE get_state();
+	bool have_key = false;
 
 private:
 	STATE state;
 	ALLEGRO_BITMAP *love;
+	ALLEGRO_BITMAP *key;
+	ALLEGRO_BITMAP *no_key;
 	ALLEGRO_BITMAP *menu_background;
 	ALLEGRO_BITMAP *menu_button;
 	// tower menu bitmap, (top-left x, top-left y), price
 	std::vector<std::tuple<ALLEGRO_BITMAP*, Point, int>> tower_items;
-	int on_item;
 };
 
 #endif

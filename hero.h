@@ -4,6 +4,7 @@
 #include "Object.h"
 #include <string>
 #include <map>
+#include <allegro5/allegro.h>
 
 // fixed settings
 enum class HeroState {
@@ -22,11 +23,13 @@ class Hero : public Object
 {
 
 public:
-	void init();
+	void init(std::pair<size_t, size_t>);
 	void update();
 	void draw();
-	const double &getCenterX() const;
-	const double &getCenterY() const; 
+	bool have_key;
+	bool mask = true;
+	bool in_closet = false;
+
 protected:
 	/**
 	 * @var HP
@@ -63,10 +66,11 @@ protected:
 
 private:
 	HeroState state = HeroState::FRONT;
-	double speed = 2;
+	double speed = 2.0;
+	double run_speed = 10.0;
 	int hero_posX, hero_posY;
-	double hero_hitX, hero_hitY;
 	std::map< HeroState, std::string> gifPath;
+	ALLEGRO_BITMAP *player_mask;
 };
 
 #endif

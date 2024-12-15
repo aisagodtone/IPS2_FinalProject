@@ -6,7 +6,7 @@
 #include "TowerStorm.h"
 #include "../Utils.h"
 #include "../shapes/Circle.h"
-//#include "../monsters/Monster.h"
+#include "../monsters/Monster.h"
 #include "../shapes/Rectangle.h"
 #include "../data/DataCenter.h"
 #include "../data/ImageCenter.h"

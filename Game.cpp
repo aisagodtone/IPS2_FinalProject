@@ -16,12 +16,15 @@
 #include <allegro5/allegro_acodec.h>
 #include <vector>
 #include <cstring>
+#include <utility>
 
 // fixed settings
 constexpr char game_icon_img_path[] = "./assets/image/game_icon.png";
 constexpr char game_start_sound_path[] = "./assets/sound/growl.wav";
 constexpr char background_img_path[] = "./assets/image/StartBackground.jpg";
-constexpr char background_sound_path[] = "./assets/sound/BackgroundMusic.ogg";
+constexpr char ingame_background_sound_path[] = "./assets/sound/ingame_bgm.mp3";
+
+
 
 /**
  * @brief Game entry.
@@ -133,11 +136,8 @@ Game::game_init() {
 	ui->init();
 
 	DC->level->init();
-	DC->hero->init();
-	debug_log("hero init successfully\n");
-	DC->monster->init(7,6, false, true);
-	debug_log("npc init successfully\n");
-
+	DC->monsters[0]->init(10,3,true, false);
+	DC->monsters[1]->init(10,2,true, false);
 	// game start
 	background = IC->get(background_img_path);
 	debug_log("Game state: change to MENU\n");
@@ -163,26 +163,33 @@ Game::game_update() {
 			break;
 		}
 		case STATE::START: {
-			static bool is_played = false;
-			static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
-			if(!is_played) {
-				instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
-				DC->level->load_level(1);
-				is_played = true;
-			}
+			// static bool is_played = false;
+			// static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
+			// if(!is_played) {
+			// 	instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
+				player_init_pos = DC->level->load_level(1);	// load level() returns player's initial position (x,y)
+				DC->hero->init(player_init_pos);
+			// 	is_played = true;
+			// }
 
-			if(!SC->is_playing(instance)) {
+			// if(!SC->is_playing(instance)) {
 				debug_log("<Game> state: change to LEVEL\n");
 				state = STATE::LEVEL;
-			}
+			// }
 			break;
+		
 		} case STATE::LEVEL: {
 			static bool BGM_played = false;
 			if(!BGM_played) {
-				background = SC->play(background_sound_path, ALLEGRO_PLAYMODE_LOOP);
+				background = SC->play(ingame_background_sound_path, ALLEGRO_PLAYMODE_LOOP);
 				BGM_played = true;
 			}
-
+			if(DC->hero->have_key){
+				ui->have_key = true;
+			}
+			else{
+				ui->have_key = false;
+			}
 			if(DC->key_state[ALLEGRO_KEY_P] && !DC->prev_key_state[ALLEGRO_KEY_P]) {
 				SC->toggle_playing(background);
 				debug_log("<Game> state: change to PAUSE\n");
@@ -196,6 +203,14 @@ Game::game_update() {
 				debug_log("<Game> state: change to END\n");
 				state = STATE::END;
 			}
+
+			for(auto &mon : DC->monsters){
+				if(mon->is_visible({DC->hero->shape->center_x(),DC->hero->shape->center_y()}) && mon->is_in_fov({DC->hero->shape->center_x(),DC->hero->shape->center_y()}))
+				{
+					debug_log("Player is found\n");
+				}
+			}
+
 			break;
 		} case STATE::PAUSE: {
 			if(DC->key_state[ALLEGRO_KEY_P] && !DC->prev_key_state[ALLEGRO_KEY_P]) {
@@ -222,7 +237,8 @@ Game::game_update() {
 		ui->update();
 		if(state != STATE::START) {
 			DC->hero->update();
-			DC->monster->update();
+			DC->monsters[0]->update();
+			DC->monsters[1]->update();
 			OC->update();
 		}
 	}
@@ -238,34 +254,22 @@ Game::game_update() {
 void
 Game::game_draw() {
 	DataCenter *DC = DataCenter::get_instance();
-	OperationCenter *OC = OperationCenter::get_instance();
 	FontCenter *FC = FontCenter::get_instance();
 
 	// Flush the screen first.
 	if(state != STATE::END && state != STATE::MENU) {
 		al_clear_to_color(al_map_rgb(100, 100, 100));
-		// background
+		// in-game background
 		al_draw_bitmap(background, 0, 0, 0);
-
-		// if(DC->game_field_length < DC->window_width)
-		// 	al_draw_filled_rectangle(
-		// 		DC->game_field_length, 0,
-		// 		DC->window_width, DC->window_height,
-		// 		al_map_rgb(100, 100, 100));
-		// if(DC->game_field_length < DC->window_height)
-		// 	al_draw_filled_rectangle(
-		// 		0, DC->game_field_length,
-		// 		DC->window_width, DC->window_height,
-		// 		al_map_rgb(100, 100, 100));
-
 		// user interface
 		if(state != STATE::START) {
 			DC->level->draw();
+			DC->monsters[0]->draw();
+			DC->monsters[1]->draw();
 			DC->hero->draw();
-			DC->monster->draw();
 			ui->draw();
-			OC->draw();
 		}
+		al_flip_display();
 	}
 	switch(state) {
 		case STATE::MENU:{

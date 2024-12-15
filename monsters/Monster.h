@@ -37,12 +37,12 @@ public:
 	void update();
 	void draw();
 	void patrol();
-	void hunt(double x, double y);
-	void alert(double x, double y);
+	//void hunt(double x, double y);
+	//void alert(double x, double y);
 	double dir_to_angle(MDir direction);
-	bool is_in_fov(const Point &player_pos, double fov_angle, double max_distance);
+	bool is_in_fov(const Point &player_pos);
 	bool is_visible(const Point &player_pos);
-	void find_path(const Point &monster_pos,const Point &player_pos); 
+	//void find_path(const Point &monster_pos,const Point &player_pos); 
 	//~Monster();
 
 	//const int &get_money() const { return money; }
@@ -95,13 +95,13 @@ private:
     bool horizontal_patrol;    // 是否為橫向巡邏（true 為橫向，false 為縱向）
     bool patrol_forward;       // 當前巡邏方向（true 為正向，false 為反向）
 	int detection_radius;    // 警戒范围
-    int chase_radius;        // 追击范围
+   // int chase_radius;        // 追击范围
 	int init_x, init_y;
 	double hitbox_x, hitbox_y;
 	double M_PI;
 	
 	std::map<MDir, std::string> gifPath;
-	std::queue<Point> path;
+	//std::queue<Point> path;
 
 };
 
