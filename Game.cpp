@@ -23,8 +23,10 @@ constexpr char game_icon_img_path[] = "./assets/image/game_icon.png";
 constexpr char game_start_sound_path[] = "./assets/sound/growl.wav";
 constexpr char background_img_path[] = "./assets/image/StartBackground.jpg";
 constexpr char ingame_background_sound_path[] = "./assets/sound/ingame_bgm.mp3";
+constexpr char menu_button_img_path[] = "./assets/image/menu_button.png";
 
-
+Rectangle menu_button_area;
+ALLEGRO_BITMAP *pause_menu_button;
 
 /**
  * @brief Game entry.
@@ -118,6 +120,7 @@ Game::game_init() {
 	FontCenter *FC = FontCenter::get_instance();
 	// set window icon
 	game_icon = IC->get(game_icon_img_path);
+	pause_menu_button = IC->get(menu_button_img_path);
 	al_set_display_icon(display, game_icon);
 
 	// register events to event_queue
@@ -158,6 +161,9 @@ Game::game_update() {
 	SoundCenter *SC = SoundCenter::get_instance();
 	static ALLEGRO_SAMPLE_INSTANCE *background = nullptr;
 	static int lvl = 1;
+	static long long spot_time = 0;
+	static int warn_level = 0;
+	static bool god_mode = false;
 
 	switch(state) {
 		case STATE::MENU: {
@@ -181,6 +187,9 @@ Game::game_update() {
 				player_init_pos = DC->level->load_level(lvl);	// load level() returns player's initial position (x,y)
 				DC->hero->init(player_init_pos);
 				DC->hero->cur_lvl = lvl;
+				warn_level = 0;
+				spot_time = 0;
+				ui->alert_level = 0;
 			// 	is_played = true;
 			// }
 
@@ -205,7 +214,9 @@ Game::game_update() {
 					ui->have_key[i] = false;
 				}
 			}
-			if(DC->key_state[ALLEGRO_KEY_P] && !DC->prev_key_state[ALLEGRO_KEY_P]) {
+			if( (DC->key_state[ALLEGRO_KEY_P] && !DC->prev_key_state[ALLEGRO_KEY_P]) 
+				|| (DC->key_state[ALLEGRO_KEY_ESCAPE] && !DC->prev_key_state[ALLEGRO_KEY_ESCAPE]) ) {
+				// pause the game
 				SC->toggle_playing(background);
 				debug_log("<Game> state: change to PAUSE\n");
 				state = STATE::PAUSE;
@@ -219,19 +230,48 @@ Game::game_update() {
 				state = STATE::POST_GAME;
 			}
 
+			if(DC->key_state[ALLEGRO_KEY_TILDE] && !DC->prev_key_state[ALLEGRO_KEY_TILDE]) {
+				god_mode = !god_mode;	// toggle god mode
+			}
 			for(auto &mon : DC->monsters){
-				if(mon->is_visible({DC->hero->shape->center_x(),DC->hero->shape->center_y()}) && mon->is_in_fov({DC->hero->shape->center_x(),DC->hero->shape->center_y()}))
+				if(mon->is_visible({DC->hero->shape->center_x(),DC->hero->shape->center_y()}) 
+				&& mon->is_in_fov({DC->hero->shape->center_x(),DC->hero->shape->center_y()})
+				&& !god_mode)
 				{
+					spot_time++;
 					debug_log("Player is found\n");
 				}
+			}
+			debug_log("spot time: %lld\n", spot_time);
+			warn_level += (spot_time/60);
+			if (spot_time/60 > 0){
+				spot_time = 0;
+			}
+			ui->alert_level = warn_level;
+			if(warn_level > 2){
+				debug_log("<Game> state: change to POST_GAME\n");
+				state = STATE::POST_GAME;
+				ui->state = UI::STATE::POST_GAME;
+				SC->toggle_playing(background);
+				warn_level = 0;
+				ui->alert_level = 3;
+				ui->draw();
 			}
 
 			break;
 		} case STATE::PAUSE: {
-			if(DC->key_state[ALLEGRO_KEY_P] && !DC->prev_key_state[ALLEGRO_KEY_P]) {
+			if( (DC->key_state[ALLEGRO_KEY_P] && !DC->prev_key_state[ALLEGRO_KEY_P]) 
+				|| (DC->key_state[ALLEGRO_KEY_ESCAPE] && !DC->prev_key_state[ALLEGRO_KEY_ESCAPE]) ) {
 				SC->toggle_playing(background);
 				debug_log("<Game> state: change to LEVEL\n");
 				state = STATE::LEVEL;
+			}
+			if(DC->mouse_state[1] && !DC->prev_mouse_state[1]) {
+				if(menu_button_area.overlap(DC->mouse)) {
+					debug_log("<Game> state: change to MENU\n");
+					state = STATE::MENU;
+					ui->state = UI::STATE::MENU;
+				}
 			}
 			break;
 		}case STATE::POST_GAME: {
@@ -314,11 +354,22 @@ Game::game_draw() {
 			break;
 		} case STATE::PAUSE: {
 			// game layout cover
-			al_draw_filled_rectangle(0, 0, DC->window_width, DC->window_height, al_map_rgba(50, 50, 50, 64));
+			al_draw_filled_rectangle(0, 0, DC->window_width, DC->window_height, al_map_rgba(20, 20, 20, 64));
 			al_draw_text(
-				FC->caviar_dreams[FontSize::LARGE], al_map_rgb(255, 255, 255),
-				DC->window_width/2., DC->window_height/2.,
+				FC->courier_new[FontSize::LARGE], al_map_rgb(255, 255, 255),
+				DC->window_width/2., DC->window_height/4.,
 				ALLEGRO_ALIGN_CENTRE, "GAME PAUSED");
+
+			menu_button_area = Rectangle(
+				DC->window_width/2. - al_get_bitmap_width(pause_menu_button)/2.,	// upper-left x
+				DC->window_height/2. - al_get_bitmap_height(pause_menu_button)/2.,	// upper-left y
+				DC->window_width/2. + al_get_bitmap_width(pause_menu_button)/2.,	// lower-right x
+				DC->window_height/2. + al_get_bitmap_height(pause_menu_button)/2.);	// lower-right y
+			al_draw_bitmap(pause_menu_button, menu_button_area.x1, menu_button_area.y1, 0);
+			al_draw_text(
+				FC->courier_new[FontSize::MEDIUM], al_map_rgb(0, 0, 0),
+				menu_button_area.center_x(), menu_button_area.center_y() - 10,
+				ALLEGRO_ALIGN_CENTRE, "MENU");
 			break;
 		} case STATE::END: {
 		}

@@ -27,6 +27,7 @@ public:
 	STATE get_state();
 	bool have_key[3] = {false};
 	STATE state;
+	int alert_level = 0;
 
 private:
 	ALLEGRO_BITMAP *love;
@@ -36,6 +37,7 @@ private:
 	ALLEGRO_BITMAP *no_key;
 	ALLEGRO_BITMAP *menu_background;
 	ALLEGRO_BITMAP *menu_button;
+	ALLEGRO_BITMAP *alert;
 	// tower menu bitmap, (top-left x, top-left y), price
 	// std::vector<std::tuple<ALLEGRO_BITMAP*, Point, int>> tower_items;
 };

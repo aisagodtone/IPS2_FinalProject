@@ -22,6 +22,7 @@ constexpr char gate_key2_img_path[] = "./assets/image/gate_key_2.png";
 constexpr char no_key_img_path[] = "./assets/image/no_key.png";
 constexpr char menu_background_img_path[] = "./assets/image/MenuBackground.jpg";
 constexpr char menu_button_img_path[] = "./assets/image/menu_button.png";
+constexpr char alert_img_path[] = "./assets/image/alert.png";
 constexpr char menu_bgm_sound_path[] = "./assets/sound/menu_bgm.wav";
 
 bool menu_drew = false;
@@ -42,6 +43,7 @@ UI::init() {
 	key_imgs[1] = IC->get(gate_key1_img_path);
 	key_imgs[2] = IC->get(gate_key2_img_path);
 	no_key = IC->get(no_key_img_path);
+	alert = IC->get(alert_img_path);
 	menu_background = IC->get(menu_background_img_path);
 	menu_button = IC->get(menu_button_img_path);
 	debug_log("<UI> state: change to MENU\n");
@@ -121,13 +123,14 @@ UI::draw() {
 	DataCenter *DC = DataCenter::get_instance();
 	// draw HP
 	const int &game_field_length = DC->game_field_length;
-	const int &player_HP = DC->player->HP;
+	// const int &player_HP = DC->player->HP;
 	int key_num = DC->player->max_key;
-	int love_width = al_get_bitmap_width(love);
+	// int love_width = al_get_bitmap_width(love);
 	int key_width = al_get_bitmap_width(key_imgs[0]);
-	for(int i = 1; i <= player_HP; ++i) {
-		al_draw_bitmap(love, game_field_length - (love_width + love_img_padding) * i, love_img_padding, 0);
-	}
+	int alert_width = al_get_bitmap_width(alert);
+	// for(int i = 1; i <= player_HP; ++i) {
+	// 	al_draw_bitmap(love, game_field_length - (love_width + love_img_padding) * i, love_img_padding, 0);
+	// }
 	for(int i = 0; i < key_num; i++) {
 		if(have_key[i]){
 			al_draw_bitmap(key_imgs[i], game_field_length - (key_width + 20) * (i+1), 30 + al_get_bitmap_height(love), 0);
@@ -135,6 +138,9 @@ UI::draw() {
 		else{
 			al_draw_bitmap(no_key, game_field_length - (key_width + 20) * (i+1), 30 + al_get_bitmap_height(love), 0);
 		}
+	}
+	for(int i = 0; i < alert_level; i++) {
+		al_draw_bitmap(alert, 10 + alert_width * (i+1), 30 + al_get_bitmap_height(love), 0);
 	}
 }
 
