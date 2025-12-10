@@ -59,8 +59,8 @@ Level::init() {
 pair<size_t, size_t>
 Level::load_level(int lvl) {
 	DataCenter *DC = DataCenter::get_instance();
-	size_t player_x = 0;
-	size_t player_y = 0;
+	size_t player_x = 1;
+	size_t player_y = 1;
 
 	char buffer[50];
 	sprintf(buffer, LevelSetting::level_path_format, lvl);
@@ -157,7 +157,6 @@ Level::draw() {
 			}
 		}
 	}
-	al_flip_display();
 }
 
 

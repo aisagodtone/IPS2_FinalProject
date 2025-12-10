@@ -69,7 +69,6 @@ private:
 	double run_speed = 10.0;
 	int hero_posX, hero_posY;
 	std::map< HeroState, std::string> gifPath;
-	ALLEGRO_BITMAP *player_mask;
 };
 
 #endif
