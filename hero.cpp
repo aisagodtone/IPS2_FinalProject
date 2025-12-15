@@ -8,9 +8,6 @@
 #include <allegro5/allegro_primitives.h>
 #include "data/ImageCenter.h"
 
-#define MASK_SHIFT_X 1280
-#define MASK_SHIFT_Y 768
-
 using namespace std;
 
 // fixed settings
@@ -32,19 +29,15 @@ constexpr char door_sound_path[] = "./assets/sound/door_open.wav";
 constexpr char door_locked_sound_path[] = "./assets/sound/door_locked.wav";
 constexpr char closet_open_sound_path[] = "./assets/sound/closet_open.mp3";
 constexpr char closet_close_sound_path[] = "./assets/sound/closet_close.mp3";
-constexpr char mask_img_path[] = "./assets/image/mask.png";
-bool mask = true;
 bool in_closet = false;
 
 void Hero::init(pair<size_t, size_t> pos){
-	ImageCenter *IC = ImageCenter::get_instance();
 	int grid = 64;
 	hero_posX = pos.first;
 	hero_posY = pos.second;
 	for(int i = 0; i < 3; i++){
 		have_key[i] = false;
 	}
-	player_mask = IC->get(mask_img_path);
 	for(size_t i = 0; i < static_cast<size_t>(HeroState::HEROSTATE_MAX); ++i){
 		char buffer[50];
 		sprintf(
@@ -73,10 +66,6 @@ void Hero::draw(){
 			shape->center_x() - gif->width / 2,
 			shape->center_y() - gif->height / 2, 0);
 	}
-	if(mask){
-		// draw mask
-		al_draw_bitmap(player_mask, shape->center_x() - MASK_SHIFT_X, shape->center_y() - MASK_SHIFT_Y, 0);
-	}
 }
 
 void Hero::update(){
@@ -84,10 +73,6 @@ void Hero::update(){
 	SoundCenter *SC = SoundCenter::get_instance();
 	static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
 
-	// toggle mask
-	if(DC->key_state[ALLEGRO_KEY_BACKSLASH] && !DC->prev_key_state[ALLEGRO_KEY_BACKSLASH]){
-		mask = !mask;
-	}
 
 	// WASD movements, LSHIFT for running, and blocking objects handling
 	if(DC->key_state[ALLEGRO_KEY_W] && !in_closet){
